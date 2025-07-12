@@ -50,6 +50,14 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Custom brand colors
+        brand: {
+          dark: "#0D0126",
+          primary: "#340773", 
+          secondary: "#150140",
+          accent: "#8F6CD9",
+          gold: "#A68A56",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

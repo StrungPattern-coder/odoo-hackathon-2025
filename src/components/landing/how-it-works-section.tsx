@@ -8,25 +8,25 @@ export function HowItWorksSection() {
       step: '01',
       title: 'Create Your Profile',
       description: 'Sign up and list the skills you offer and want to learn.',
-      color: 'from-blue-500 to-cyan-500',
+      color: 'from-brand-primary to-brand-accent',
     },
     {
       step: '02',
       title: 'Discover Matches',
       description: 'Browse and find perfect skill swap partners in your area or globally.',
-      color: 'from-purple-500 to-pink-500',
+      color: 'from-brand-accent to-brand-gold',
     },
     {
       step: '03',
       title: 'Connect & Swap',
       description: 'Send requests, schedule sessions, and start learning together.',
-      color: 'from-green-500 to-teal-500',
+      color: 'from-brand-gold to-brand-primary',
     },
     {
       step: '04',
       title: 'Grow Together',
       description: 'Rate experiences, earn badges, and build lasting connections.',
-      color: 'from-orange-500 to-red-500',
+      color: 'from-brand-secondary to-brand-accent',
     },
   ]
 

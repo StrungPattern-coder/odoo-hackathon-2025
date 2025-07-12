@@ -4,14 +4,14 @@ import { motion } from 'framer-motion'
 
 export function StatsSection() {
   const stats = [
-    { number: '25,000+', label: 'Active Members', color: 'text-blue-500' },
-    { number: '150,000+', label: 'Skills Swapped', color: 'text-purple-500' },
-    { number: '500+', label: 'Skill Categories', color: 'text-green-500' },
-    { number: '98%', label: 'Success Rate', color: 'text-orange-500' },
+    { number: '25,000+', label: 'Active Members', color: 'text-brand-accent' },
+    { number: '150,000+', label: 'Skills Swapped', color: 'text-brand-gold' },
+    { number: '500+', label: 'Skill Categories', color: 'text-white' },
+    { number: '98%', label: 'Success Rate', color: 'text-brand-accent' },
   ]
 
   return (
-    <section id="stats" className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+    <section id="stats" className="py-20 bg-gradient-to-r from-brand-primary to-brand-secondary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           className="text-center mb-16"
@@ -23,7 +23,7 @@ export function StatsSection() {
           <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
             Growing Community
           </h2>
-          <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+          <p className="text-xl text-white/70 max-w-3xl mx-auto">
             Join thousands of learners who are already transforming their skills
           </p>
         </motion.div>
@@ -41,7 +41,7 @@ export function StatsSection() {
               <div className="text-4xl sm:text-5xl font-bold text-white mb-2">
                 {stat.number}
               </div>
-              <div className="text-blue-100">{stat.label}</div>
+              <div className="text-white/70">{stat.label}</div>
             </motion.div>
           ))}
         </div>

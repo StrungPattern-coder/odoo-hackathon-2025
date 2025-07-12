@@ -37,18 +37,18 @@ export function LandingFooter() {
   ]
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-brand-dark text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
           {/* Brand Section */}
           <div className="md:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
-              <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
+              <div className="p-2 bg-gradient-to-r from-brand-primary to-brand-accent rounded-lg">
                 <Zap className="h-6 w-6 text-white" />
               </div>
               <span className="text-xl font-bold">SkillSync</span>
             </Link>
-            <p className="text-gray-400 mb-6 max-w-sm">
+            <p className="text-white/60 mb-6 max-w-sm">
               Connecting learners worldwide through the power of skill sharing. 
               Learn. Share. Grow.
             </p>
@@ -59,7 +59,7 @@ export function LandingFooter() {
                   <a
                     key={link.name}
                     href={link.href}
-                    className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors duration-200"
+                    className="p-2 bg-brand-secondary rounded-lg hover:bg-brand-primary transition-colors duration-200"
                     aria-label={link.name}
                   >
                     <Icon className="h-5 w-5" />
@@ -78,7 +78,7 @@ export function LandingFooter() {
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="text-gray-400 hover:text-white transition-colors duration-200"
+                      className="text-white/60 hover:text-brand-accent transition-colors duration-200"
                     >
                       {link.name}
                     </Link>
@@ -90,11 +90,11 @@ export function LandingFooter() {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">
+        <div className="border-t border-brand-secondary mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center">
+          <p className="text-white/70 text-sm">
             © 2025 SkillSync. All rights reserved.
           </p>
-          <p className="text-gray-400 text-sm mt-2 sm:mt-0">
+          <p className="text-white/70 text-sm mt-2 sm:mt-0">
             Made with ❤️ for Odoo Hackathon 2025
           </p>
         </div>

@@ -89,8 +89,8 @@ export function generateAvatar(name: string): string {
     .slice(0, 2)
   
   const colors = [
-    '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
-    '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9'
+    '#340773', '#8F6CD9', '#A68A56', '#150140', '#0D0126',
+    '#5B4B8A', '#B794E6', '#D4B879', '#2A0952', '#1A033A'
   ]
   
   const colorIndex = name.length % colors.length
@@ -123,14 +123,14 @@ export function debounce<T extends (...args: any[]) => any>(
 
 export function getSkillCategoryColor(category: string): string {
   const colors: Record<string, string> = {
-    'Technology': 'bg-blue-100 text-blue-800 border-blue-200',
-    'Design': 'bg-purple-100 text-purple-800 border-purple-200',
-    'Business': 'bg-green-100 text-green-800 border-green-200',
-    'Language': 'bg-orange-100 text-orange-800 border-orange-200',
-    'Art': 'bg-pink-100 text-pink-800 border-pink-200',
-    'Music': 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    'Technology': 'bg-brand-accent/10 text-brand-accent border-brand-accent/30',
+    'Design': 'bg-brand-primary/10 text-brand-primary border-brand-primary/30',
+    'Business': 'bg-brand-gold/10 text-brand-gold border-brand-gold/30',
+    'Language': 'bg-brand-secondary/10 text-brand-secondary border-brand-secondary/30',
+    'Art': 'bg-brand-accent/10 text-brand-accent border-brand-accent/30',
+    'Music': 'bg-brand-primary/10 text-brand-primary border-brand-primary/30',
     'Fitness': 'bg-red-100 text-red-800 border-red-200',
-    'Cooking': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    'Cooking': 'bg-orange-100 text-orange-800 border-orange-200',
     'Other': 'bg-gray-100 text-gray-800 border-gray-200',
   }
   
@@ -139,11 +139,11 @@ export function getSkillCategoryColor(category: string): string {
 
 export function getSwapStatusColor(status: string): string {
   const colors: Record<string, string> = {
-    'pending': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    'accepted': 'bg-green-100 text-green-800 border-green-200',
+    'pending': 'bg-brand-gold/10 text-brand-gold border-brand-gold/30',
+    'accepted': 'bg-brand-accent/10 text-brand-accent border-brand-accent/30',
     'rejected': 'bg-red-100 text-red-800 border-red-200',
     'cancelled': 'bg-gray-100 text-gray-800 border-gray-200',
-    'completed': 'bg-blue-100 text-blue-800 border-blue-200',
+    'completed': 'bg-brand-primary/10 text-brand-primary border-brand-primary/30',
   }
   
   return colors[status] || colors['pending']
