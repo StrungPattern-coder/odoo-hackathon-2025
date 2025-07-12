@@ -294,6 +294,33 @@ export async function updateSwapRequestStatus(
   }
 }
 
+// Remove user skill
+export async function removeUserSkill(skillId: string): Promise<boolean> {
+  try {
+    const { userId } = auth()
+    if (!userId) throw new Error('User not authenticated')
+
+    const user = await getCurrentUser()
+    if (!user) throw new Error('User not found in database')
+
+    const { error } = await supabase
+      .from('user_skills')
+      .delete()
+      .eq('id', skillId)
+      .eq('user_id', user.id)
+
+    if (error) {
+      console.error('Error removing user skill:', error)
+      throw error
+    }
+
+    return true
+  } catch (error) {
+    console.error('Error in removeUserSkill:', error)
+    throw error
+  }
+}
+
 // Search users by skills
 export async function searchUsersBySkill(skillName: string): Promise<UserSkill[]> {
   try {

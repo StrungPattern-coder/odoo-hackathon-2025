@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { SignInButton, SignUpButton, useUser, useClerk } from '@clerk/nextjs'
-import { Menu, X, Zap } from 'lucide-react'
+import { Menu, X, Zap, User } from 'lucide-react'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -54,6 +54,12 @@ export function LandingNavbar() {
           <div className="hidden md:flex items-center space-x-4">
             {isSignedIn ? (
               <>
+                <Button asChild variant="outline" className="flex items-center gap-2">
+                  <Link href="/dashboard/profile">
+                    <User className="h-4 w-4" />
+                    My Profile
+                  </Link>
+                </Button>
                 <Button asChild>
                   <Link href="/dashboard">Dashboard</Link>
                 </Button>
@@ -111,6 +117,12 @@ export function LandingNavbar() {
               <div className="pt-4 border-t border-gray-200 space-y-2">
                 {isSignedIn ? (
                   <>
+                    <Button asChild variant="outline" className="w-full flex items-center gap-2">
+                      <Link href="/dashboard/profile">
+                        <User className="h-4 w-4" />
+                        My Profile
+                      </Link>
+                    </Button>
                     <Button asChild className="w-full">
                       <Link href="/dashboard">Dashboard</Link>
                     </Button>

@@ -75,85 +75,66 @@ export function SkillsOverview() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[40vh]">
-      <Card className="w-full max-w-xl shadow-lg border border-[var(--primary)] bg-[var(--background)]">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-xl font-bold text-[var(--primary)]">Skills I Want</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-4">
-            <input
-              type="text"
-              placeholder="Search or add a skill..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full p-3 border-2 border-[var(--accent)] rounded-lg focus:outline-none focus:border-[var(--primary)] bg-[var(--card)] text-[var(--secondary)]"
-            />
-          </div>
-          <div className="flex flex-wrap gap-2 mb-4">
-            {filteredSkills.map((skill, idx) => (
-              <Button
-                key={idx}
-                variant={selectedSkills.includes(skill) ? "default" : "outline"}
-                onClick={() => handleSkillClick(skill)}
-                className={`transition-all duration-200 px-3 py-1 rounded-full text-xs font-medium max-w-[140px] truncate whitespace-nowrap
-                  ${selectedSkills.includes(skill)
-                    ? 'bg-[var(--accent)] text-white border-none'
-                    : 'bg-[var(--card)] text-[var(--highlight)] border border-[var(--accent)]'}
-                `}
-                style={{
-                  color: selectedSkills.includes(skill) ? '#fff' : '#A68A56',
-                  background: selectedSkills.includes(skill) ? '#8F6CD9' : 'var(--card)',
-                  borderColor: '#8F6CD9',
-                  fontSize: '0.85rem',
-                }}
-              >
-                {skill}
-              </Button>
-            ))}
-          </div>
-          {/* Add custom skill if not in suggestions */}
-          {search && !skillSuggestions.some(s => s.toLowerCase() === search.toLowerCase()) && (
-            <div className="mb-4">
-              <Button
-                variant={selectedSkills.includes(search) ? "default" : "outline"}
-                onClick={() => handleSkillClick(search)}
-                className={`transition-all duration-200 px-3 py-1 rounded-full text-xs font-medium max-w-[140px] truncate whitespace-nowrap
-                  ${selectedSkills.includes(search)
-                    ? 'bg-[var(--accent)] text-white border-none'
-                    : 'bg-[var(--card)] text-[var(--highlight)] border border-[var(--accent)]'}
-                `}
-                style={{
-                  color: selectedSkills.includes(search) ? '#fff' : '#A68A56',
-                  background: selectedSkills.includes(search) ? '#8F6CD9' : 'var(--card)',
-                  borderColor: '#8F6CD9',
-                  fontSize: '0.85rem',
-                }}
-              >
-                Add "{search}"
-              </Button>
-            </div>
-          )}
-          <div className="flex justify-center">
+    <Card>
+      <CardHeader>
+        <CardTitle>Skills I Want</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search or add a skill..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 bg-white text-gray-900"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {filteredSkills.map((skill, idx) => (
             <Button
-              onClick={handleSave}
-              disabled={saving || selectedSkills.length === 0}
-              className="mt-2 w-full py-3 font-semibold rounded-lg transition"
-              style={{
-                maxWidth: '220px',
-                background: saving ? '#A68A56' : '#8F6CD9',
-                color: '#fff',
-                border: '2px solid #340773',
-                fontSize: '1rem',
-                boxShadow: '0 2px 8px rgba(52,7,115,0.08)'
-              }}
+              key={idx}
+              variant={selectedSkills.includes(skill) ? "default" : "outline"}
+              onClick={() => handleSkillClick(skill)}
+              className={`transition-all duration-200 px-3 py-1 rounded-full text-xs font-medium max-w-[140px] truncate whitespace-nowrap
+                ${selectedSkills.includes(skill)
+                  ? 'bg-blue-600 text-white border-none'
+                  : 'bg-white text-gray-700 border border-gray-300'}
+              `}
             >
-              {saving ? "Saving..." : "Save Skills"}
+              {skill}
+            </Button>
+          ))}
+        </div>
+        {/* Add custom skill if not in suggestions */}
+        {search && !skillSuggestions.some(s => s.toLowerCase() === search.toLowerCase()) && (
+          <div className="mb-4">
+            <Button
+              variant={selectedSkills.includes(search) ? "default" : "outline"}
+              onClick={() => handleSkillClick(search)}
+              className={`transition-all duration-200 px-3 py-1 rounded-full text-xs font-medium max-w-[140px] truncate whitespace-nowrap
+                ${selectedSkills.includes(search)
+                  ? 'bg-blue-600 text-white border-none'
+                  : 'bg-white text-gray-700 border border-gray-300'}
+              `}
+            >
+              Add "{search}"
             </Button>
           </div>
-          {saveMsg && <p className="mt-2 text-sm text-green-600 text-center">{saveMsg}</p>}
-        </CardContent>
-      </Card>
-    </div>
+        )}
+        <div className="flex justify-center">
+          <Button
+            onClick={handleSave}
+            disabled={saving || selectedSkills.length === 0}
+            className="mt-2 w-full py-3 font-semibold rounded-lg transition bg-blue-600 hover:bg-blue-700 text-white"
+            style={{
+              maxWidth: '220px',
+            }}
+          >
+            {saving ? "Saving..." : "Save Skills"}
+          </Button>
+        </div>
+        {saveMsg && <p className="mt-2 text-sm text-green-600 text-center">{saveMsg}</p>}
+      </CardContent>
+    </Card>
   );
 }

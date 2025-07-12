@@ -148,3 +148,7 @@ export function getSwapStatusColor(status: string): string {
   
   return colors[status] || colors['pending']
 }
+
+export function getDefaultAvatar(name: string): string {
+  return generateAvatar(name)
+}

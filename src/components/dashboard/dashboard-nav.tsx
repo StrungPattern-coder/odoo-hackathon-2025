@@ -14,7 +14,8 @@ import {
   Settings,
   Menu,
   X,
-  Zap
+  Zap,
+  User
 } from 'lucide-react'
 
 const navigation = [
@@ -69,6 +70,12 @@ export function DashboardNav() {
 
           {/* User Menu and Mobile Menu Button */}
           <div className="flex items-center space-x-4">
+            <Link href="/dashboard/profile">
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                My Profile
+              </Button>
+            </Link>
             <UserButton afterSignOutUrl="/" />
             
             {/* Mobile menu button */}
@@ -111,6 +118,21 @@ export function DashboardNav() {
                 </Link>
               )
             })}
+            
+            {/* Profile Link in Mobile Menu */}
+            <Link
+              href="/dashboard/profile"
+              className={cn(
+                'flex items-center px-4 py-2 text-base font-medium transition-colors',
+                pathname === '/dashboard/profile'
+                  ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-500'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              )}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <User className="h-5 w-5 mr-3" />
+              My Profile
+            </Link>
           </div>
         </div>
       )}
