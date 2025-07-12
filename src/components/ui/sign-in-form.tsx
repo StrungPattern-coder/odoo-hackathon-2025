@@ -2,36 +2,23 @@
 
 "use client";
 import React, { useState } from "react";
-import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
-
 export const SignInForm = () => {
-  const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
-    if (!isLoaded) return;
-    try {
-      const result = await signIn.create({ identifier: email, password });
-      if (result.status === "complete") {
-        await setActive({ session: result.createdSessionId });
-        router.push("/dashboard");
-      } else {
-        setError("Sign in not complete. Please try again.");
-      }
-    } catch (err: any) {
-      setError(err.errors?.[0]?.message || "Sign in failed.");
-    } finally {
-      setLoading(false);
-    }
+    
+    // Simulate loading for better UX
+    setTimeout(() => {
+      // Bypass authentication and go directly to admin dashboard
+      router.push("/admin");
+    }, 1000);
   };
 
   return (
@@ -63,7 +50,6 @@ export const SignInForm = () => {
             required
           />
         </div>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
         <button
           type="submit"
           className="w-full py-2 px-4 bg-[var(--accent)] text-[var(--background)] font-semibold rounded hover:bg-[var(--primary)] transition"

@@ -11,6 +11,13 @@ export interface User {
   availability_status: 'available' | 'busy' | 'offline'
   xp_points: number
   level: number
+  total_swaps_completed?: number
+  average_rating?: number
+  is_admin?: boolean
+  is_banned?: boolean
+  banned_until?: string
+  ban_reason?: string
+  last_active?: string
   created_at: string
   updated_at: string
 }

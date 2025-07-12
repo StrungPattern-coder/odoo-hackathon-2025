@@ -3,20 +3,20 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { SignInButton, SignUpButton, useUser, useClerk } from '@clerk/nextjs'
-import { Menu, X, Zap, User } from 'lucide-react'
+import { Menu, X, Zap, User, Shield } from 'lucide-react'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+
+const navItems = [
+  { name: 'Features', href: '#features' },
+  { name: 'How It Works', href: '#how-it-works' },
+  { name: 'About', href: '#about' },
+]
 
 export function LandingNavbar() {
   const { isSignedIn } = useUser()
   const clerk = useClerk()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-  const navItems = [
-    { name: 'Features', href: '#features' },
-    { name: 'How It Works', href: '#how-it-works' },
-    { name: 'Stats', href: '#stats' },
-  ]
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
     <motion.nav 
@@ -52,6 +52,12 @@ export function LandingNavbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            <Button asChild variant="outline" className="flex items-center gap-2 border-[#8F6CD9] text-[#340773] hover:bg-[#8F6CD9] hover:text-white transition-all duration-300">
+              <Link href="/admin">
+                <Shield className="h-4 w-4" />
+                Admin
+              </Link>
+            </Button>
             {isSignedIn ? (
               <>
                 <Button asChild variant="outline" className="flex items-center gap-2 border-[#8F6CD9] text-[#340773] hover:bg-[#8F6CD9] hover:text-white transition-all duration-300">
@@ -83,9 +89,9 @@ export function LandingNavbar() {
           {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 rounded-lg hover:bg-[#8F6CD9]/10 transition-colors duration-200"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            {isMenuOpen ? (
+            {isMobileMenuOpen ? (
               <X className="h-6 w-6 text-[#340773]" />
             ) : (
               <Menu className="h-6 w-6 text-[#340773]" />
@@ -96,7 +102,7 @@ export function LandingNavbar() {
 
       {/* Mobile Menu */}
       <AnimatePresence>
-        {isMenuOpen && (
+        {isMobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -110,12 +116,18 @@ export function LandingNavbar() {
                   key={item.name}
                   href={item.href}
                   className="block text-gray-600 hover:text-[#8F6CD9] transition-colors duration-200 font-medium"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
               <div className="pt-4 border-t border-[#8F6CD9]/20 space-y-2">
+                <Button asChild variant="outline" className="w-full flex items-center gap-2 border-[#8F6CD9] text-[#340773] hover:bg-[#8F6CD9] hover:text-white transition-all duration-300">
+                  <Link href="/admin">
+                    <Shield className="h-4 w-4" />
+                    Admin
+                  </Link>
+                </Button>
                 {isSignedIn ? (
                   <>
                     <Button asChild variant="outline" className="w-full flex items-center gap-2 border-[#8F6CD9] text-[#340773] hover:bg-[#8F6CD9] hover:text-white transition-all duration-300">
