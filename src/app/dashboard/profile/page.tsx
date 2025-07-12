@@ -1,9 +1,8 @@
 "use client"
 import { useState, useEffect } from 'react'
 import { useCurrentUser, useUserSkills } from '@/hooks/use-auth'
-import { updateUserProfile } from '@/lib/services/user-service'
+import { updateUserProfileClient, addUserSkillClient, removeUserSkill } from '@/lib/services/user-service'
 import { getAllSkills } from '@/lib/services/skill-service'
-import { addUserSkill, removeUserSkill } from '@/lib/services/user-service'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -32,7 +31,7 @@ import {
 } from 'lucide-react'
 
 export default function ProfilePage() {
-  const { supabaseUser, loading: userLoading } = useCurrentUser()
+  const { supabaseUser, clerkUser, loading: userLoading } = useCurrentUser()
   const { skills: offeredSkills, loading: offeredLoading, refetch: refetchOffered } = useUserSkills(supabaseUser?.id, 'offered')
   const { skills: wantedSkills, loading: wantedLoading, refetch: refetchWanted } = useUserSkills(supabaseUser?.id, 'wanted')
   const { toast } = useToast()
@@ -119,11 +118,11 @@ export default function ProfilePage() {
   }
 
   async function handleSaveField() {
-    if (!editingField) return
+    if (!editingField || !clerkUser?.id) return
     
     setSaving(true)
     try {
-      await updateUserProfile(form)
+      await updateUserProfileClient(form, clerkUser.id)
       setEditingField(null)
       toast({
         title: "Success",
@@ -149,15 +148,15 @@ export default function ProfilePage() {
   }
 
   async function handleSaveSkill() {
-    if (!selectedSkillId || !addingSkillType) return
+    if (!selectedSkillId || !addingSkillType || !clerkUser?.id) return
     
     setSaving(true)
     try {
-      await addUserSkill({
+      await addUserSkillClient({
         skill_id: selectedSkillId,
         type: addingSkillType,
         proficiency_level: selectedProficiency as 1 | 2 | 3 | 4 | 5,
-      })
+      }, clerkUser.id)
       
       setAddingSkillType(null)
       setSelectedSkillId('')

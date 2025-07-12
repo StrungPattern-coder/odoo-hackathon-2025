@@ -10,172 +10,76 @@ import { useCurrentUser } from '@/hooks/use-auth'
 import { supabase } from '@/lib/supabase'
 import { SwapRequest } from '@/types'
 
-export default function SwapsPage() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedStatus, setSelectedStatus] = useState<string>('all')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [swapRequests, setSwapRequests] = useState<SwapRequest[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const { supabaseUser } = useCurrentUser()
-  const requestsPerPage = 5
-
-  // Fetch swap requests
-  const fetchSwapRequests = async () => {
-    if (!supabaseUser) return
-
-    try {
-      setLoading(true)
-      setError(null)
-
-      const { data, error: supabaseError } = await supabase
-        .from('swap_requests')
-        .select(`
-          *,
-          requester:users!requester_id(*),
-          provider:users!provider_id(*),
-          requester_skill:user_skills!requester_skill_id(*, skill:skills(*)),
-          provider_skill:user_skills!provider_skill_id(*, skill:skills(*))
-        `)
-        .or(`requester_id.eq.${supabaseUser.id},provider_id.eq.${supabaseUser.id}`)
-        .order('created_at', { ascending: false })
-
-      if (supabaseError) {
-        setError(supabaseError.message)
-        setSwapRequests([])
-      } else {
-        setSwapRequests(data || [])
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error')
-      setSwapRequests([])
-    } finally {
-      setLoading(false)
+// Static demo data for swaps - including new requests from skill swap page
+const demoSwapRequests: any[] = [
+  {
+    id: '1',
+    requester_id: 'user1',
+    provider_id: 'user2',
+    requester_skill_id: 'skill1',
+    provider_skill_id: 'skill2',
+    status: 'pending',
+    message: 'I would love to learn React in exchange for Python help!',
+    created_at: '2024-01-15T10:30:00Z',
+    updated_at: '2024-01-15T10:30:00Z',
+    requester: {
+      id: 'user1',
+      first_name: 'Sarah',
+      last_name: 'Johnson',
+      email: 'sarah@example.com',
+      average_rating: 4.8,
+      total_swaps_completed: 12
+    },
+    provider: {
+      id: 'user2',
+      first_name: 'Mike',
+      last_name: 'Chen',
+      email: 'mike@example.com',
+      average_rating: 4.6,
+      total_swaps_completed: 8
+    },
+    requester_skill: {
+      id: 'skill1',
+      skill: { name: 'Python', category: 'Programming' }
+    },
+    provider_skill: {
+      id: 'skill2',
+      skill: { name: 'React', category: 'Frontend' }
     }
-  }
-
-  useEffect(() => {
-    fetchSwapRequests()
-
-    // Set up real-time subscription
-    if (supabaseUser) {
-      const subscription = supabase
-        .channel('swap_requests')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'swap_requests',
-            filter: `requester_id=eq.${supabaseUser.id},provider_id=eq.${supabaseUser.id}`,
-          },
-          () => {
-            fetchSwapRequests()
-          }
-        )
-        .subscribe()
-
-      return () => {
-        subscription.unsubscribe()
-      }
-    }
-  }, [supabaseUser])
-
-  const filteredRequests = swapRequests.filter(request => {
-    const requesterName = request.requester ? `${request.requester.first_name} ${request.requester.last_name}` : ''
-    const providerName = request.provider ? `${request.provider.first_name} ${request.provider.last_name}` : ''
-    const requesterSkill = request.requester_skill?.skill?.name || ''
-    const providerSkill = request.provider_skill?.skill?.name || ''
-    
-    const matchesSearch = requesterName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      providerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      requesterSkill.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      providerSkill.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesStatus = selectedStatus === 'all' || request.status === selectedStatus
-    
-    return matchesSearch && matchesStatus
-  })
-
-  const totalPages = Math.ceil(filteredRequests.length / requestsPerPage)
-  const currentRequests = filteredRequests.slice(
-    (currentPage - 1) * requestsPerPage,
-    currentPage * requestsPerPage
-  )
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-orange-100 text-orange-800 border-orange-200'
-      case 'accepted':
-        return 'bg-blue-100 text-blue-800 border-blue-200'
-      case 'rejected':
-        return 'bg-red-100 text-red-800 border-red-200'
-      case 'completed':
-        return 'bg-green-100 text-green-800 border-green-200'
-      case 'cancelled':
-        return 'bg-gray-100 text-gray-800 border-gray-200'
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200'
-    }
-  }
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return <Clock className="w-4 h-4" />
-      case 'accepted':
-        return <Check className="w-4 h-4" />
-      case 'rejected':
-        return <X className="w-4 h-4" />
-      case 'completed':
-        return <Check className="w-4 h-4" />
-      case 'cancelled':
-        return <X className="w-4 h-4" />
-      default:
-        return null
-    }
-  }
-
-  const handleAccept = async (requestId: string) => {
-    try {
-      const response = await fetch(`/api/swaps/${requestId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: 'accepted' }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to accept request')
-      }
-
-      // The real-time subscription will automatically update the UI
-    } catch (error) {
-      console.error('Error accepting request:', error)
-      setError('Failed to accept request')
-    }
-  }
-
-  const handleReject = async (requestId: string) => {
-    try {
-      const response = await fetch(`/api/swaps/${requestId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: 'rejected' }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to reject request')
-      }
-
-      // The real-time subscription will automatically update the UI
-    } catch (error) {
-      console.error('Error rejecting request:', error)
-      setError('Failed to reject request')
+  },
+  {
+    id: '2',
+    requester_id: 'user3',
+    provider_id: 'user1',
+    requester_skill_id: 'skill3',
+    provider_skill_id: 'skill4',
+    status: 'accepted',
+    message: 'Looking to improve my JavaScript skills!',
+    created_at: '2024-01-14T14:20:00Z',
+    updated_at: '2024-01-14T15:00:00Z',
+    requester: {
+      id: 'user3',
+      first_name: 'Alex',
+      last_name: 'Rodriguez',
+      email: 'alex@example.com',
+      average_rating: 4.2,
+      total_swaps_completed: 5
+    },
+    provider: {
+      id: 'user1',
+      first_name: 'Sarah',
+      last_name: 'Johnson',
+      email: 'sarah@example.com',
+      average_rating: 4.8,
+      total_swaps_completed: 12
+    },
+    requester_skill: {
+      id: 'skill3',
+      skill: { name: 'Design', category: 'Creative' }
+    },
+    provider_skill: {
+      id: 'skill4',
+      skill: { name: 'JavaScript', category: 'Programming' }
     }
   }
 
@@ -236,8 +140,8 @@ export default function SwapsPage() {
         )}
 
         {/* Search and Filter Bar */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-8">
-          <div className="flex flex-col sm:flex-row gap-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+          <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
@@ -253,7 +157,7 @@ export default function SwapsPage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="h-12 border border-gray-200 rounded-lg px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white w-full sm:min-w-[160px]"
+                className="h-12 border border-gray-200 rounded-lg px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white min-w-[160px]"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
@@ -286,120 +190,110 @@ export default function SwapsPage() {
               const providerPhoto = request.provider?.image_url || '/api/placeholder/120/120'
               
               return (
-                <div key={request.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden">
-                  <div className="p-4 sm:p-6">
-                    {/* Header Section */}
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+            <div key={request.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden">
+                  <div className="p-6">
+                <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        {/* User Info */}
-                        <div className="flex items-center space-x-3 mb-3">
-                          <div className="relative flex-shrink-0">
-                            <img
-                              src={requesterPhoto}
-                              alt={requesterName}
-                              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-gray-200"
-                            />
-                            <div className="absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-blue-500 rounded-full border-2 border-white"></div>
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">{requesterName}</h3>
-                            <p className="text-xs sm:text-sm text-gray-500">wants to swap</p>
-                          </div>
-                        </div>
-                        
-                        {/* Skills Section */}
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
-                          <div className="flex flex-col xs:flex-row xs:items-center gap-2">
-                            <Badge variant="secondary" className="px-2 py-1 text-xs sm:text-sm w-fit">
+                        <div className="flex items-center space-x-4 mb-4">
+                          <div className="flex items-center space-x-3">
+                            <div className="relative">
+                              <img
+                                src={requesterPhoto}
+                                alt={requesterName}
+                                className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
+                              />
+                              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-gray-900">{requesterName}</h3>
+                              <p className="text-sm text-gray-500">wants to swap</p>
+                      </div>
+                    </div>
+                    
+                          <div className="flex items-center space-x-2">
+                            <Badge variant="secondary" className="px-3 py-1">
                               {requesterSkill}
                             </Badge>
-                            <span className="text-gray-400 hidden xs:inline">↔</span>
-                            <span className="text-gray-400 xs:hidden text-center">↓</span>
-                            <Badge variant="secondary" className="px-2 py-1 text-xs sm:text-sm w-fit">
+                            <span className="text-gray-400">↔</span>
+                            <Badge variant="secondary" className="px-3 py-1">
                               {providerSkill}
                             </Badge>
                           </div>
                           
-                          {/* Rating */}
-                          <div className="flex items-center space-x-2 bg-gray-50 rounded-lg px-2 py-1 sm:px-3 sm:py-2 w-fit">
-                            <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-yellow-400 text-yellow-400" />
-                            <span className="font-semibold text-gray-900 text-sm sm:text-base">
-                              {request.requester?.average_rating || 0}
-                            </span>
-                            <span className="text-gray-500 text-xs sm:text-sm">/ 5</span>
+                          <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-2 bg-gray-50 rounded-lg px-3 py-2 w-fit">
+                              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                              <span className="font-semibold text-gray-900 text-base">
+                                {request.requester?.average_rating || 0}
+                              </span>
+                              <span className="text-gray-500">/ 5</span>
+                            </div>
                           </div>
-                        </div>
                       </div>
                       
-                      {/* Status Badge */}
-                      <div className="flex justify-between sm:justify-end items-center">
-                        <Badge className={getStatusColor(request.status)}>
-                          <div className="flex items-center space-x-1">
-                            {getStatusIcon(request.status)}
-                            <span className="capitalize text-xs sm:text-sm">{request.status}</span>
+                        {request.message && (
+                          <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                            <p className="text-gray-700">{request.message}</p>
                           </div>
-                        </Badge>
-                        <span className="text-xs sm:text-sm text-gray-500 sm:hidden">
-                          {new Date(request.created_at).toLocaleDateString()}
-                        </span>
+                        )}
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <Badge className={getStatusColor(request.status)}>
+                              <div className="flex items-center space-x-1">
+                                {getStatusIcon(request.status)}
+                                <span className="capitalize">{request.status}</span>
+                              </div>
+                            </Badge>
+                            <span className="text-sm text-gray-500">
+                              {new Date(request.created_at).toLocaleDateString()}
+                            </span>
                       </div>
                     </div>
-                    
-                    {/* Message Section */}
-                    {request.message && (
-                      <div className="mb-4 p-3 sm:p-4 bg-gray-50 rounded-lg">
-                        <p className="text-gray-700 text-sm sm:text-base">{request.message}</p>
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex flex-col items-end space-y-4 flex-shrink-0 ml-6">
+                        {canUserAct(request) && (
+                      <div className="flex space-x-3">
+                            {!isUserRequester(request) && (
+                              <>
+                        <Button
+                          onClick={() => handleAccept(request.id)}
+                          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 text-base font-medium shadow-sm hover:shadow-md transition-all"
+                        >
+                          <Check className="w-4 h-4 mr-2" />
+                          Accept
+                        </Button>
+                        <Button
+                          onClick={() => handleReject(request.id)}
+                          variant="outline"
+                          className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 px-6 py-2.5 text-base font-medium"
+                        >
+                          <X className="w-4 h-4 mr-2" />
+                          Reject
+                        </Button>
+                              </>
+                            )}
+                            {isUserRequester(request) && (
+                              <Button
+                                onClick={() => handleDelete(request.id)}
+                                variant="outline"
+                                className="border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 px-6 py-2.5 text-base font-medium"
+                              >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Cancel
+                              </Button>
+                            )}
                       </div>
                     )}
                     
-                    {/* Footer Section */}
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <div className="hidden sm:flex items-center space-x-4">
-                        <span className="text-sm text-gray-500">
-                          {new Date(request.created_at).toLocaleDateString()}
-                        </span>
+                    {request.status === 'accepted' && (
+                      <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-base font-medium shadow-sm hover:shadow-md transition-all">
+                        Start Chat
+                      </Button>
+                    )}
                       </div>
-                      
-                      {/* Action Buttons */}
-                      {canUserAct(request) && (
-                        <div className="flex flex-col xs:flex-row gap-2 w-full sm:w-auto">
-                          {!isUserRequester(request) && (
-                            <>
-                              <Button
-                                onClick={() => handleAccept(request.id)}
-                                className="bg-green-600 hover:bg-green-700 text-white px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-medium shadow-sm hover:shadow-md transition-all w-full xs:w-auto"
-                              >
-                                <Check className="w-4 h-4 mr-1 sm:mr-2" />
-                                Accept
-                              </Button>
-                              <Button
-                                onClick={() => handleReject(request.id)}
-                                variant="outline"
-                                className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-medium w-full xs:w-auto"
-                              >
-                                <X className="w-4 h-4 mr-1 sm:mr-2" />
-                                Reject
-                              </Button>
-                            </>
-                          )}
-                          {isUserRequester(request) && (
-                            <Button
-                              onClick={() => handleDelete(request.id)}
-                              variant="outline"
-                              className="border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-medium w-full xs:w-auto"
-                            >
-                              <Trash2 className="w-4 h-4 mr-1 sm:mr-2" />
-                              Cancel
-                            </Button>
-                          )}
-                        </div>
-                      )}
-                      
-                      {request.status === 'accepted' && (
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-8 py-2 sm:py-3 text-sm sm:text-base font-medium shadow-sm hover:shadow-md transition-all w-full sm:w-auto">
-                          Start Chat
-                        </Button>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -410,52 +304,39 @@ export default function SwapsPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
+          <div className="flex justify-center mt-8">
+            <div className="flex space-x-2">
+                <Button
+                  variant="outline"
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base"
-              >
-                Previous
-              </Button>
-              
+                  disabled={currentPage === 1}
+                className="px-4 py-2"
+                >
+                  Previous
+                </Button>
+                
               <div className="flex space-x-1">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  let page;
-                  if (totalPages <= 5) {
-                    page = i + 1;
-                  } else if (currentPage <= 3) {
-                    page = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    page = totalPages - 4 + i;
-                  } else {
-                    page = currentPage - 2 + i;
-                  }
-                  
-                  return (
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                     <Button
                       key={page}
                       variant={currentPage === page ? "default" : "outline"}
                       onClick={() => setCurrentPage(page)}
-                      className="px-2 sm:px-3 py-2 text-sm sm:text-base w-8 sm:w-auto"
+                    className="px-3 py-2"
                     >
                       {page}
                     </Button>
-                  );
-                })}
-              </div>
-              
-              <Button
-                variant="outline"
+                  ))}
+                </div>
+                
+                <Button
+                  variant="outline"
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base"
-              >
-                Next
-              </Button>
-            </div>
+                  disabled={currentPage === totalPages}
+                className="px-4 py-2"
+                >
+                  Next
+                </Button>
+              </div>
           </div>
         )}
       </main>

@@ -48,7 +48,7 @@ export async function getUserById(id: string): Promise<User | null> {
   }
 }
 
-// Update user profile
+// Update user profile (server-side version)
 export async function updateUserProfile(updates: Partial<User>): Promise<User | null> {
   try {
     const { userId } = auth()
@@ -76,7 +76,34 @@ export async function updateUserProfile(updates: Partial<User>): Promise<User | 
   }
 }
 
-// Get user skills
+// Update user profile (client-side version)
+export async function updateUserProfileClient(updates: Partial<User>, clerkId: string): Promise<User | null> {
+  try {
+    if (!clerkId) throw new Error('User not authenticated')
+
+    const { data, error } = await supabase
+      .from('users')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('clerk_id', clerkId)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error updating user profile:', error)
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error in updateUserProfileClient:', error)
+    throw error
+  }
+}
+
+// Get user skills (server-side version)
 export async function getUserSkills(userId?: string): Promise<UserSkill[]> {
   try {
     const targetUserId = userId || auth().userId
@@ -104,7 +131,46 @@ export async function getUserSkills(userId?: string): Promise<UserSkill[]> {
   }
 }
 
-// Add user skill
+// Get user skills (client-side version)
+export async function getUserSkillsClient(clerkId: string): Promise<UserSkill[]> {
+  try {
+    if (!clerkId) return []
+
+    // First get the user from Supabase using clerk_id
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('clerk_id', clerkId)
+      .single()
+
+    if (userError || !userData) {
+      console.error('Error fetching user:', userError)
+      return []
+    }
+
+    const { data, error } = await supabase
+      .from('user_skills')
+      .select(`
+        *,
+        skill:skills(*),
+        user:users(*)
+      `)
+      .eq('user_id', userData.id)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching user skills:', error)
+      return []
+    }
+
+    return data || []
+  } catch (error) {
+    console.error('Error in getUserSkillsClient:', error)
+    return []
+  }
+}
+
+// Add user skill (server-side version)
 export async function addUserSkill(skillData: {
   skill_id: string
   type: 'offered' | 'wanted'
@@ -141,6 +207,53 @@ export async function addUserSkill(skillData: {
     return data
   } catch (error) {
     console.error('Error in addUserSkill:', error)
+    throw error
+  }
+}
+
+// Add user skill (client-side version)
+export async function addUserSkillClient(skillData: {
+  skill_id: string
+  type: 'offered' | 'wanted'
+  proficiency_level: 1 | 2 | 3 | 4 | 5
+  years_experience?: number
+  description?: string
+}, clerkId: string): Promise<UserSkill | null> {
+  try {
+    if (!clerkId) throw new Error('User not authenticated')
+
+    // Get user ID from Supabase using clerk_id
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('clerk_id', clerkId)
+      .single()
+
+    if (userError || !userData) {
+      throw new Error('User not found in database')
+    }
+
+    const { data, error } = await supabase
+      .from('user_skills')
+      .insert({
+        user_id: userData.id,
+        ...skillData,
+      })
+      .select(`
+        *,
+        skill:skills(*),
+        user:users(*)
+      `)
+      .single()
+
+    if (error) {
+      console.error('Error adding user skill:', error)
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.error('Error in addUserSkillClient:', error)
     throw error
   }
 }

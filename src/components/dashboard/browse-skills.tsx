@@ -9,7 +9,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useSkillSwapStore, User } from '@/store/skill-swap-store'
 import { Search, MapPin, Star, Clock, ArrowRight } from 'lucide-react'
 import { useUser } from '@clerk/nextjs'
-import { SwapRequestModal } from './swap-request-modal'
 
 export function BrowseSkillsPage() {
   const { user } = useUser()
@@ -48,6 +47,8 @@ export function BrowseSkillsPage() {
   const handleRequestSwap = (targetUser: User) => {
     setSelectedUser(targetUser)
     setShowSwapModal(true)
+    // For demo, just show an alert
+    alert(`Swap request sent to ${targetUser.name}!`)
   }
 
   return (
@@ -193,15 +194,6 @@ export function BrowseSkillsPage() {
             }
           </p>
         </div>
-      )}
-
-      {/* Swap Request Modal */}
-      {selectedUser && (
-        <SwapRequestModal
-          open={showSwapModal}
-          onOpenChange={setShowSwapModal}
-          targetUser={selectedUser}
-        />
       )}
     </div>
   )
