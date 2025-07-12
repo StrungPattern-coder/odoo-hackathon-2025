@@ -63,7 +63,8 @@ export function LandingNavbar() {
                 <Button asChild>
                   <Link href="/dashboard">Dashboard</Link>
                 </Button>
-                <Button variant="outline" onClick={async () => { await clerk.signOut(); window.location.href = '/sign-in'; }}>
+                <Button variant="outline" onClick={async () => { await clerk.signOut(); window.location.href = '/sign-in'; }} className="flex items-center gap-2">
+                  <i className="fa-solid fa-right-from-bracket"></i>
                   Logout
                 </Button>
               </>
@@ -126,7 +127,8 @@ export function LandingNavbar() {
                     <Button asChild className="w-full">
                       <Link href="/dashboard">Dashboard</Link>
                     </Button>
-                    <Button variant="outline" className="w-full" onClick={async () => { await clerk.signOut(); window.location.href = '/sign-in'; }}>
+                    <Button variant="outline" className="w-full flex items-center gap-2" onClick={async () => { await clerk.signOut(); window.location.href = '/sign-in'; }}>
+                      <i className="fa-solid fa-right-from-bracket"></i>
                       Logout
                     </Button>
                   </>
