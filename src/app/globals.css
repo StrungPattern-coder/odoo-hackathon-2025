@@ -5,25 +5,25 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 250 20% 8%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 250 20% 8%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
+    --popover-foreground: 250 20% 8%;
+    --primary: 262 45% 35%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 42 35% 45%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 250 8% 96%;
+    --muted-foreground: 250 15% 45%;
+    --accent: 262 45% 55%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 250 15% 90%;
+    --input: 250 15% 90%;
+    --ring: 262 45% 35%;
+    --radius: 0.75rem;
   }
 
   .dark {
@@ -64,32 +64,88 @@
   }
   
   .gradient-bg {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #340773 0%, #8F6CD9 50%, #A68A56 100%);
+  }
+  
+  .gradient-bg-light {
+    background: linear-gradient(135deg, #8F6CD9 0%, #A68A56 100%);
+  }
+  
+  .gradient-bg-dark {
+    background: linear-gradient(135deg, #150140 0%, #340773 50%, #8F6CD9 100%);
   }
   
   .glass-morphism {
     backdrop-filter: blur(16px) saturate(180%);
-    background-color: rgba(255, 255, 255, 0.75);
-    border: 1px solid rgba(209, 213, 219, 0.3);
+    background-color: rgba(143, 108, 217, 0.1);
+    border: 1px solid rgba(143, 108, 217, 0.2);
+  }
+  
+  .glass-morphism-dark {
+    backdrop-filter: blur(16px) saturate(180%);
+    background-color: rgba(21, 1, 64, 0.8);
+    border: 1px solid rgba(143, 108, 217, 0.3);
   }
   
   .skill-card {
-    @apply rounded-lg p-4 border transition-all duration-300 hover:shadow-lg hover:border-primary/20;
+    @apply rounded-xl p-6 border transition-all duration-300 hover:shadow-xl hover:border-primary/30 bg-gradient-to-br from-white to-purple-50/50;
+  }
+  
+  .skill-card:hover {
+    @apply transform -translate-y-1;
+    box-shadow: 0 20px 40px rgba(143, 108, 217, 0.15);
   }
   
   .swap-status-pending {
-    @apply bg-yellow-100 text-yellow-800 border-yellow-200;
+    @apply bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 border-yellow-200;
   }
   
   .swap-status-accepted {
-    @apply bg-green-100 text-green-800 border-green-200;
+    @apply bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200;
   }
   
   .swap-status-rejected {
-    @apply bg-red-100 text-red-800 border-red-200;
+    @apply bg-gradient-to-r from-red-100 to-pink-100 text-red-800 border-red-200;
   }
   
   .swap-status-cancelled {
-    @apply bg-gray-100 text-gray-800 border-gray-200;
+    @apply bg-gradient-to-r from-gray-100 to-slate-100 text-gray-800 border-gray-200;
+  }
+  
+  .hero-gradient {
+    background: linear-gradient(135deg, 
+      rgba(52, 7, 115, 0.05) 0%, 
+      rgba(143, 108, 217, 0.1) 25%, 
+      rgba(166, 138, 86, 0.05) 50%, 
+      rgba(143, 108, 217, 0.1) 75%, 
+      rgba(52, 7, 115, 0.05) 100%);
+  }
+  
+  .card-gradient {
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.9) 0%, 
+      rgba(143, 108, 217, 0.05) 100%);
+    backdrop-filter: blur(10px);
+  }
+  
+  .button-gradient {
+    background: linear-gradient(135deg, #340773 0%, #8F6CD9 100%);
+  }
+  
+  .button-gradient:hover {
+    background: linear-gradient(135deg, #8F6CD9 0%, #A68A56 100%);
+  }
+  
+  .text-gradient {
+    background: linear-gradient(135deg, #340773 0%, #8F6CD9 50%, #A68A56 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .border-gradient {
+    border: 2px solid transparent;
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(135deg, #340773, #8F6CD9, #A68A56) border-box;
   }
 }

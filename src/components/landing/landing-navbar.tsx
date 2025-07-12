@@ -23,16 +23,16 @@ export function LandingNavbar() {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200"
+      className="fixed top-0 left-0 right-0 z-50 glass-morphism border-b border-[#8F6CD9]/20"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 cursor-pointer">
-            <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
+            <div className="p-2 button-gradient rounded-lg">
               <Zap className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="text-xl font-bold text-gradient">
               SkillSync
             </span>
           </Link>
@@ -43,7 +43,7 @@ export function LandingNavbar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium"
+                className="text-gray-600 hover:text-[#8F6CD9] transition-colors duration-200 font-medium"
               >
                 {item.name}
               </Link>
@@ -54,16 +54,16 @@ export function LandingNavbar() {
           <div className="hidden md:flex items-center space-x-4">
             {isSignedIn ? (
               <>
-                <Button asChild variant="outline" className="flex items-center gap-2">
+                <Button asChild variant="outline" className="flex items-center gap-2 border-[#8F6CD9] text-[#340773] hover:bg-[#8F6CD9] hover:text-white transition-all duration-300">
                   <Link href="/dashboard/profile">
                     <User className="h-4 w-4" />
                     My Profile
                   </Link>
                 </Button>
-                <Button asChild>
+                <Button asChild className="button-gradient text-white hover:shadow-lg">
                   <Link href="/dashboard">Dashboard</Link>
                 </Button>
-                <Button variant="outline" onClick={async () => { await clerk.signOut(); window.location.href = '/sign-in'; }} className="flex items-center gap-2">
+                <Button variant="outline" onClick={async () => { await clerk.signOut(); window.location.href = '/sign-in'; }} className="flex items-center gap-2 border-[#8F6CD9] text-[#340773] hover:bg-[#8F6CD9] hover:text-white transition-all duration-300">
                   <i className="fa-solid fa-right-from-bracket"></i>
                   Logout
                 </Button>
@@ -71,10 +71,10 @@ export function LandingNavbar() {
             ) : (
               <>
                 <SignInButton mode="modal">
-                  <Button variant="ghost">Sign In</Button>
+                  <Button variant="ghost" className="hover:bg-[#8F6CD9]/10 hover:text-[#8F6CD9]">Sign In</Button>
                 </SignInButton>
                 <SignUpButton mode="modal">
-                  <Button>Get Started</Button>
+                  <Button className="button-gradient text-white hover:shadow-lg">Get Started</Button>
                 </SignUpButton>
               </>
             )}
@@ -82,13 +82,13 @@ export function LandingNavbar() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+            className="md:hidden p-2 rounded-lg hover:bg-[#8F6CD9]/10 transition-colors duration-200"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? (
-              <X className="h-6 w-6 text-gray-600" />
+              <X className="h-6 w-6 text-[#340773]" />
             ) : (
-              <Menu className="h-6 w-6 text-gray-600" />
+              <Menu className="h-6 w-6 text-[#340773]" />
             )}
           </button>
         </div>
@@ -102,32 +102,32 @@ export function LandingNavbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden bg-white border-t border-gray-200"
+            className="md:hidden glass-morphism border-t border-[#8F6CD9]/20"
           >
             <div className="px-4 py-4 space-y-4">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="block text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium"
+                  className="block text-gray-600 hover:text-[#8F6CD9] transition-colors duration-200 font-medium"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
-              <div className="pt-4 border-t border-gray-200 space-y-2">
+              <div className="pt-4 border-t border-[#8F6CD9]/20 space-y-2">
                 {isSignedIn ? (
                   <>
-                    <Button asChild variant="outline" className="w-full flex items-center gap-2">
+                    <Button asChild variant="outline" className="w-full flex items-center gap-2 border-[#8F6CD9] text-[#340773] hover:bg-[#8F6CD9] hover:text-white transition-all duration-300">
                       <Link href="/dashboard/profile">
                         <User className="h-4 w-4" />
                         My Profile
                       </Link>
                     </Button>
-                    <Button asChild className="w-full">
+                    <Button asChild className="w-full button-gradient text-white hover:shadow-lg">
                       <Link href="/dashboard">Dashboard</Link>
                     </Button>
-                    <Button variant="outline" className="w-full flex items-center gap-2" onClick={async () => { await clerk.signOut(); window.location.href = '/sign-in'; }}>
+                    <Button variant="outline" className="w-full flex items-center gap-2 border-[#8F6CD9] text-[#340773] hover:bg-[#8F6CD9] hover:text-white transition-all duration-300" onClick={async () => { await clerk.signOut(); window.location.href = '/sign-in'; }}>
                       <i className="fa-solid fa-right-from-bracket"></i>
                       Logout
                     </Button>
@@ -135,12 +135,12 @@ export function LandingNavbar() {
                 ) : (
                   <>
                     <SignInButton mode="modal">
-                      <Button variant="ghost" className="w-full">
+                      <Button variant="ghost" className="w-full hover:bg-[#8F6CD9]/10 hover:text-[#8F6CD9]">
                         Sign In
                       </Button>
                     </SignInButton>
                     <SignUpButton mode="modal">
-                      <Button className="w-full">Get Started</Button>
+                      <Button className="w-full button-gradient text-white hover:shadow-lg">Get Started</Button>
                     </SignUpButton>
                   </>
                 )}

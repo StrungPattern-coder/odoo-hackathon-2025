@@ -31,16 +31,16 @@ export function DashboardNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="bg-white border-b border-gray-200">
+    <nav className="bg-white border-b border-[#8F6CD9]/20 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo and Desktop Navigation */}
           <div className="flex">
             <Link href="/" className="flex items-center space-x-2 cursor-pointer">
-              <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
+              <div className="p-2 button-gradient rounded-lg">
                 <Zap className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold text-gradient">
                 SkillSync
               </span>
             </Link>
@@ -56,8 +56,8 @@ export function DashboardNav() {
                     className={cn(
                       'inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 transition-colors',
                       isActive
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        ? 'border-[#8F6CD9] text-[#340773]'
+                        : 'border-transparent text-gray-500 hover:text-[#8F6CD9] hover:border-[#8F6CD9]/30'
                     )}
                   >
                     <item.icon className="h-4 w-4 mr-2" />
@@ -71,7 +71,7 @@ export function DashboardNav() {
           {/* User Menu and Mobile Menu Button */}
           <div className="flex items-center space-x-4">
             <Link href="/dashboard/profile">
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="flex items-center gap-2 border-[#8F6CD9] text-[#340773] hover:bg-[#8F6CD9] hover:text-white transition-all duration-300">
                 <User className="h-4 w-4" />
                 My Profile
               </Button>
@@ -82,7 +82,7 @@ export function DashboardNav() {
             <Button
               variant="ghost"
               size="sm"
-              className="md:hidden"
+              className="md:hidden hover:bg-[#8F6CD9]/10"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? (
@@ -98,7 +98,7 @@ export function DashboardNav() {
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
         <div className="md:hidden">
-          <div className="pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
+          <div className="pt-2 pb-3 space-y-1 bg-white border-t border-[#8F6CD9]/20">
             {navigation.map((item) => {
               const isActive = pathname === item.href
               return (
@@ -108,8 +108,8 @@ export function DashboardNav() {
                   className={cn(
                     'flex items-center px-4 py-2 text-base font-medium transition-colors',
                     isActive
-                      ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-500'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      ? 'bg-[#8F6CD9]/10 text-[#340773] border-r-4 border-[#8F6CD9]'
+                      : 'text-gray-600 hover:bg-[#8F6CD9]/5 hover:text-[#8F6CD9]'
                   )}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -125,8 +125,8 @@ export function DashboardNav() {
               className={cn(
                 'flex items-center px-4 py-2 text-base font-medium transition-colors',
                 pathname === '/dashboard/profile'
-                  ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-500'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-[#8F6CD9]/10 text-[#340773] border-r-4 border-[#8F6CD9]'
+                  : 'text-gray-600 hover:bg-[#8F6CD9]/5 hover:text-[#8F6CD9]'
               )}
               onClick={() => setIsMobileMenuOpen(false)}
             >

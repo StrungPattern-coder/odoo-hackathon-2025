@@ -75,9 +75,9 @@ export function SkillsOverview() {
   };
 
   return (
-    <Card>
+    <Card className="card-gradient border border-[#8F6CD9]/20">
       <CardHeader>
-        <CardTitle>Skills I Want</CardTitle>
+        <CardTitle className="text-[#340773]">Skills I Want</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="mb-4">
@@ -86,7 +86,7 @@ export function SkillsOverview() {
             placeholder="Search or add a skill..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 bg-white text-gray-900"
+            className="w-full p-3 border-2 border-[#8F6CD9]/30 rounded-lg focus:outline-none focus:border-[#8F6CD9] bg-white text-gray-900 transition-all duration-300"
           />
         </div>
         <div className="flex flex-wrap gap-2 mb-4">
@@ -97,8 +97,8 @@ export function SkillsOverview() {
               onClick={() => handleSkillClick(skill)}
               className={`transition-all duration-200 px-3 py-1 rounded-full text-xs font-medium max-w-[140px] truncate whitespace-nowrap
                 ${selectedSkills.includes(skill)
-                  ? 'bg-blue-600 text-white border-none'
-                  : 'bg-white text-gray-700 border border-gray-300'}
+                  ? 'button-gradient text-white border-none shadow-md'
+                  : 'bg-white text-[#340773] border border-[#8F6CD9]/40 hover:border-[#8F6CD9] hover:bg-[#8F6CD9]/5'}
               `}
             >
               {skill}
@@ -113,8 +113,8 @@ export function SkillsOverview() {
               onClick={() => handleSkillClick(search)}
               className={`transition-all duration-200 px-3 py-1 rounded-full text-xs font-medium max-w-[140px] truncate whitespace-nowrap
                 ${selectedSkills.includes(search)
-                  ? 'bg-blue-600 text-white border-none'
-                  : 'bg-white text-gray-700 border border-gray-300'}
+                  ? 'button-gradient text-white border-none shadow-md'
+                  : 'bg-white text-[#340773] border border-[#8F6CD9]/40 hover:border-[#8F6CD9] hover:bg-[#8F6CD9]/5'}
               `}
             >
               Add "{search}"
@@ -125,7 +125,7 @@ export function SkillsOverview() {
           <Button
             onClick={handleSave}
             disabled={saving || selectedSkills.length === 0}
-            className="mt-2 w-full py-3 font-semibold rounded-lg transition bg-blue-600 hover:bg-blue-700 text-white"
+            className="mt-2 w-full py-3 font-semibold rounded-lg transition button-gradient text-white hover:shadow-lg disabled:opacity-50"
             style={{
               maxWidth: '220px',
             }}
@@ -133,7 +133,7 @@ export function SkillsOverview() {
             {saving ? "Saving..." : "Save Skills"}
           </Button>
         </div>
-        {saveMsg && <p className="mt-2 text-sm text-green-600 text-center">{saveMsg}</p>}
+        {saveMsg && <p className="mt-2 text-sm text-[#A68A56] text-center font-medium">{saveMsg}</p>}
       </CardContent>
     </Card>
   );

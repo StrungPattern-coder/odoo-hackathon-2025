@@ -63,30 +63,30 @@ export function HeroSection() {
       className="min-h-screen flex items-center justify-center relative overflow-hidden"
     >
       {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50" />
+      <div className="absolute inset-0 hero-gradient" />
       
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="floating-icon absolute top-20 left-10 p-4 bg-white/30 rounded-full backdrop-blur-sm"
+          className="floating-icon absolute top-20 left-10 p-4 glass-morphism rounded-full"
           animate={{ y: [0, -20, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Zap className="h-8 w-8 text-blue-500" />
+          <Zap className="h-8 w-8 text-[#8F6CD9]" />
         </motion.div>
         <motion.div
-          className="floating-icon absolute top-40 right-20 p-4 bg-white/30 rounded-full backdrop-blur-sm"
+          className="floating-icon absolute top-40 right-20 p-4 glass-morphism rounded-full"
           animate={{ y: [0, 20, 0] }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         >
-          <Users className="h-8 w-8 text-purple-500" />
+          <Users className="h-8 w-8 text-[#A68A56]" />
         </motion.div>
         <motion.div
-          className="floating-icon absolute bottom-40 left-20 p-4 bg-white/30 rounded-full backdrop-blur-sm"
+          className="floating-icon absolute bottom-40 left-20 p-4 glass-morphism rounded-full"
           animate={{ y: [0, -15, 0] }}
           transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         >
-          <Sparkles className="h-8 w-8 text-pink-500" />
+          <Sparkles className="h-8 w-8 text-[#340773]" />
         </motion.div>
       </div>
 
@@ -98,7 +98,7 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
         >
-          <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <span className="text-gradient">
             Learn. Share. Grow.
           </span>
         </motion.h1>
@@ -122,7 +122,7 @@ export function HeroSection() {
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
         >
           {isSignedIn ? (
-            <Button asChild size="lg" className="text-lg px-8 py-4 rounded-full">
+            <Button asChild size="lg" className="text-lg px-8 py-4 rounded-full button-gradient text-white hover:shadow-lg transition-all duration-300">
               <Link href="/dashboard">
                 Go to Dashboard
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -131,7 +131,7 @@ export function HeroSection() {
           ) : (
             <>
               <SignUpButton mode="modal">
-                <Button size="lg" className="text-lg px-8 py-4 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                <Button size="lg" className="text-lg px-8 py-4 rounded-full button-gradient text-white hover:shadow-lg transition-all duration-300">
                   Start Swapping Skills
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
@@ -139,7 +139,7 @@ export function HeroSection() {
               <Button
                 variant="outline"
                 size="lg"
-                className="text-lg px-8 py-4 rounded-full border-2 hover:bg-gray-50"
+                className="text-lg px-8 py-4 rounded-full border-2 border-[#8F6CD9] text-[#340773] hover:bg-[#8F6CD9] hover:text-white transition-all duration-300"
                 asChild
               >
                 <Link href="#features">Learn More</Link>
@@ -155,16 +155,16 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.6 }}
         >
-          <div className="text-center">
-            <div className="text-3xl sm:text-4xl font-bold text-blue-600 mb-2">10K+</div>
+          <div className="text-center p-6 card-gradient rounded-xl border border-[#8F6CD9]/20">
+            <div className="text-3xl sm:text-4xl font-bold text-[#340773] mb-2">10K+</div>
             <div className="text-gray-600">Active Learners</div>
           </div>
-          <div className="text-center">
-            <div className="text-3xl sm:text-4xl font-bold text-purple-600 mb-2">50K+</div>
+          <div className="text-center p-6 card-gradient rounded-xl border border-[#8F6CD9]/20">
+            <div className="text-3xl sm:text-4xl font-bold text-[#8F6CD9] mb-2">50K+</div>
             <div className="text-gray-600">Skills Swapped</div>
           </div>
-          <div className="text-center">
-            <div className="text-3xl sm:text-4xl font-bold text-pink-600 mb-2">500+</div>
+          <div className="text-center p-6 card-gradient rounded-xl border border-[#8F6CD9]/20">
+            <div className="text-3xl sm:text-4xl font-bold text-[#A68A56] mb-2">500+</div>
             <div className="text-gray-600">Skill Categories</div>
           </div>
         </motion.div>

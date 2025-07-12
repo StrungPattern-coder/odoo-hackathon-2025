@@ -41,29 +41,29 @@ export function DashboardStats() {
       title: 'Total Swaps',
       value: stats.totalSwaps,
       icon: TrendingUp,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
+      color: 'text-[#A68A56]',
+      bgColor: 'bg-[#A68A56]/10'
     },
     {
       title: 'Pending Requests',
       value: stats.pendingRequests,
       icon: MessageSquare,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50'
+      color: 'text-[#8F6CD9]',
+      bgColor: 'bg-[#8F6CD9]/10'
     },
     {
       title: 'Skills Offered',
       value: stats.skillsOffered,
       icon: BookOpen,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
+      color: 'text-[#340773]',
+      bgColor: 'bg-[#340773]/10'
     },
     {
       title: 'Skills Wanted',
       value: stats.skillsWanted,
       icon: Users,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
+      color: 'text-[#8F6CD9]',
+      bgColor: 'bg-[#8F6CD9]/10'
     }
   ]
 
@@ -71,7 +71,7 @@ export function DashboardStats() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[...Array(4)].map((_, i) => (
-          <Card key={i} className="animate-pulse">
+          <Card key={i} className="animate-pulse card-gradient border border-[#8F6CD9]/20">
             <CardHeader className="pb-2">
               <div className="h-4 bg-gray-200 rounded w-3/4"></div>
             </CardHeader>
@@ -87,9 +87,9 @@ export function DashboardStats() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {statCards.map((stat) => (
-        <Card key={stat.title}>
+        <Card key={stat.title} className="card-gradient border border-[#8F6CD9]/20 hover:border-[#8F6CD9]/40 transition-all duration-300 hover:shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-[#340773]">
               {stat.title}
             </CardTitle>
             <div className={`p-2 rounded-lg ${stat.bgColor}`}>
@@ -97,7 +97,7 @@ export function DashboardStats() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stat.value}</div>
+            <div className="text-2xl font-bold text-[#340773]">{stat.value}</div>
           </CardContent>
         </Card>
       ))}
