@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { SignInButton, SignUpButton, useUser } from '@clerk/nextjs'
+import { SignInButton, SignUpButton, useUser, useClerk } from '@clerk/nextjs'
 import { Menu, X, Zap } from 'lucide-react'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function LandingNavbar() {
   const { isSignedIn } = useUser()
+  const clerk = useClerk()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const navItems = [
@@ -52,9 +53,14 @@ export function LandingNavbar() {
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             {isSignedIn ? (
-              <Button asChild>
-                <Link href="/dashboard">Dashboard</Link>
-              </Button>
+              <>
+                <Button asChild>
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
+                <Button variant="outline" onClick={async () => { await clerk.signOut(); window.location.href = '/sign-in'; }}>
+                  Logout
+                </Button>
+              </>
             ) : (
               <>
                 <SignInButton mode="modal">
@@ -104,9 +110,14 @@ export function LandingNavbar() {
               ))}
               <div className="pt-4 border-t border-gray-200 space-y-2">
                 {isSignedIn ? (
-                  <Button asChild className="w-full">
-                    <Link href="/dashboard">Dashboard</Link>
-                  </Button>
+                  <>
+                    <Button asChild className="w-full">
+                      <Link href="/dashboard">Dashboard</Link>
+                    </Button>
+                    <Button variant="outline" className="w-full" onClick={async () => { await clerk.signOut(); window.location.href = '/sign-in'; }}>
+                      Logout
+                    </Button>
+                  </>
                 ) : (
                   <>
                     <SignInButton mode="modal">
