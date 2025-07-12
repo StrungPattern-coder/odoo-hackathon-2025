@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { SignInButton, SignUpButton, useUser, useClerk } from '@clerk/nextjs'
-import { Menu, X, Zap, User } from 'lucide-react'
+import { Menu, X, Zap, User, Shield } from 'lucide-react'
 import { useState } from 'react'
 
 const navItems = [
@@ -46,6 +46,12 @@ export function LandingNavbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-3">
+            <Button asChild variant="outline" className="rounded-full flex items-center gap-2">
+              <Link href="/admin">
+                <Shield className="h-4 w-4" />
+                Admin
+              </Link>
+            </Button>
             {isSignedIn ? (
               <>
                 <Button asChild variant="outline" className="rounded-full flex items-center gap-2">
@@ -80,17 +86,17 @@ export function LandingNavbar() {
               size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2"
-            >
+          >
               {isMobileMenuOpen ? (
                 <X className="h-5 w-5" />
-              ) : (
+            ) : (
                 <Menu className="h-5 w-5" />
-              )}
+            )}
             </Button>
-          </div>
         </div>
+      </div>
 
-        {/* Mobile Menu */}
+      {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
             <div className="flex flex-col space-y-3">
@@ -106,6 +112,12 @@ export function LandingNavbar() {
               ))}
               
               <div className="pt-4 border-t border-gray-200">
+                <Button asChild variant="outline" className="rounded-full flex items-center gap-2 w-full justify-start">
+                  <Link href="/admin">
+                    <Shield className="h-4 w-4" />
+                    Admin
+                  </Link>
+                </Button>
                 {isSignedIn ? (
                   <div className="flex flex-col space-y-2">
                     <Button asChild variant="outline" className="rounded-full flex items-center gap-2">

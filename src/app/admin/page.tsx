@@ -20,7 +20,6 @@ import {
   Plus,
   Trash2
 } from 'lucide-react'
-import { useCurrentUser } from '@/hooks/use-auth'
 import { supabase } from '@/lib/supabase'
 
 interface AdminStats {
@@ -49,7 +48,6 @@ interface SwapRequest {
 
 export default function AdminPage() {
   const router = useRouter()
-  const { supabaseUser, loading: authLoading } = useCurrentUser()
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 0,
     pendingSwaps: 0,
@@ -60,44 +58,11 @@ export default function AdminPage() {
   const [swapRequests, setSwapRequests] = useState<SwapRequest[]>([])
   const [adminMessage, setAdminMessage] = useState('')
   const [loading, setLoading] = useState(true)
-  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
-    checkAdminStatus()
-  }, [supabaseUser])
-
-  const checkAdminStatus = async () => {
-    if (!supabaseUser) {
-      if (!authLoading) {
-        router.push('/sign-in')
-      }
-      return
-    }
-
-    try {
-      const { data: user, error } = await supabase
-        .from('users')
-        .select('is_admin')
-        .eq('clerk_id', supabaseUser.clerk_id)
-        .single()
-
-      if (error || !user) {
-        router.push('/dashboard')
-        return
-      }
-
-      if (!user.is_admin) {
-        router.push('/dashboard')
-        return
-      }
-
-      setIsAdmin(true)
-      fetchAdminData()
-    } catch (error) {
-      console.error('Error checking admin status:', error)
-      router.push('/dashboard')
-    }
-  }
+    // Remove authentication check and directly fetch admin data
+    fetchAdminData()
+  }, [])
 
   const fetchAdminData = async () => {
     try {
@@ -224,24 +189,14 @@ export default function AdminPage() {
     router.push('/sign-in')
   }
 
-  if (authLoading || loading) {
+  const handleDashboard = () => {
+    router.push('/dashboard')
+  }
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    )
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-          <p className="text-gray-600 mb-4">You don't have admin privileges.</p>
-          <Button onClick={() => router.push('/dashboard')}>
-            Go to Dashboard
-          </Button>
-        </div>
       </div>
     )
   }
@@ -260,6 +215,9 @@ export default function AdminPage() {
               <Badge variant="secondary" className="bg-green-100 text-green-800">
                 Admin Access
               </Badge>
+              <Button variant="outline" onClick={handleDashboard}>
+                Dashboard
+              </Button>
               <Button variant="outline" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout

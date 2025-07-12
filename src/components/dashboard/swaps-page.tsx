@@ -286,9 +286,9 @@ export default function SwapsPage() {
               const providerPhoto = request.provider?.image_url || '/api/placeholder/120/120'
               
               return (
-                <div key={request.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden">
+            <div key={request.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden">
                   <div className="p-6">
-                    <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-4 mb-4">
                           <div className="flex items-center space-x-3">
@@ -303,9 +303,9 @@ export default function SwapsPage() {
                             <div>
                               <h3 className="font-semibold text-gray-900">{requesterName}</h3>
                               <p className="text-sm text-gray-500">wants to swap</p>
-                            </div>
-                          </div>
-                          
+                      </div>
+                    </div>
+                    
                           <div className="flex items-center space-x-2">
                             <Badge variant="secondary" className="px-3 py-1">
                               {requesterSkill}
@@ -325,8 +325,8 @@ export default function SwapsPage() {
                               <span className="text-gray-500">/ 5</span>
                             </div>
                           </div>
-                        </div>
-                        
+                      </div>
+                      
                         {request.message && (
                           <div className="mb-4 p-4 bg-gray-50 rounded-lg">
                             <p className="text-gray-700">{request.message}</p>
@@ -344,31 +344,31 @@ export default function SwapsPage() {
                             <span className="text-sm text-gray-500">
                               {new Date(request.created_at).toLocaleDateString()}
                             </span>
-                          </div>
-                        </div>
                       </div>
-                      
-                      {/* Action Buttons */}
-                      <div className="flex flex-col items-end space-y-4 flex-shrink-0 ml-6">
+                    </div>
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex flex-col items-end space-y-4 flex-shrink-0 ml-6">
                         {canUserAct(request) && (
-                          <div className="flex space-x-3">
+                      <div className="flex space-x-3">
                             {!isUserRequester(request) && (
                               <>
-                                <Button
-                                  onClick={() => handleAccept(request.id)}
-                                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 text-base font-medium shadow-sm hover:shadow-md transition-all"
-                                >
-                                  <Check className="w-4 h-4 mr-2" />
-                                  Accept
-                                </Button>
-                                <Button
-                                  onClick={() => handleReject(request.id)}
-                                  variant="outline"
-                                  className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 px-6 py-2.5 text-base font-medium"
-                                >
-                                  <X className="w-4 h-4 mr-2" />
-                                  Reject
-                                </Button>
+                        <Button
+                          onClick={() => handleAccept(request.id)}
+                          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 text-base font-medium shadow-sm hover:shadow-md transition-all"
+                        >
+                          <Check className="w-4 h-4 mr-2" />
+                          Accept
+                        </Button>
+                        <Button
+                          onClick={() => handleReject(request.id)}
+                          variant="outline"
+                          className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 px-6 py-2.5 text-base font-medium"
+                        >
+                          <X className="w-4 h-4 mr-2" />
+                          Reject
+                        </Button>
                               </>
                             )}
                             {isUserRequester(request) && (
@@ -381,14 +381,14 @@ export default function SwapsPage() {
                                 Cancel
                               </Button>
                             )}
-                          </div>
-                        )}
-                        
-                        {request.status === 'accepted' && (
-                          <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-base font-medium shadow-sm hover:shadow-md transition-all">
-                            Start Chat
-                          </Button>
-                        )}
+                      </div>
+                    )}
+                    
+                    {request.status === 'accepted' && (
+                      <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-base font-medium shadow-sm hover:shadow-md transition-all">
+                        Start Chat
+                      </Button>
+                    )}
                       </div>
                     </div>
                   </div>
@@ -402,37 +402,37 @@ export default function SwapsPage() {
         {totalPages > 1 && (
           <div className="flex justify-center mt-8">
             <div className="flex space-x-2">
-              <Button
-                variant="outline"
+                <Button
+                  variant="outline"
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
+                  disabled={currentPage === 1}
                 className="px-4 py-2"
-              >
-                Previous
-              </Button>
-              
+                >
+                  Previous
+                </Button>
+                
               <div className="flex space-x-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    onClick={() => setCurrentPage(page)}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      onClick={() => setCurrentPage(page)}
                     className="px-3 py-2"
-                  >
-                    {page}
-                  </Button>
-                ))}
-              </div>
-              
-              <Button
-                variant="outline"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+                
+                <Button
+                  variant="outline"
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
+                  disabled={currentPage === totalPages}
                 className="px-4 py-2"
-              >
-                Next
-              </Button>
-            </div>
+                >
+                  Next
+                </Button>
+              </div>
           </div>
         )}
       </main>

@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { SignUp } from '@clerk/nextjs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Shield, CheckCircle, AlertTriangle } from 'lucide-react'
+import { Shield, CheckCircle, AlertTriangle, UserPlus } from 'lucide-react'
 
 export default function AdminSetupPage() {
   const router = useRouter()
@@ -17,6 +18,7 @@ export default function AdminSetupPage() {
     last_name: 'User'
   })
   const [loading, setLoading] = useState(false)
+  const [showSignUp, setShowSignUp] = useState(false)
   const [result, setResult] = useState<{
     success: boolean
     message: string
@@ -59,6 +61,47 @@ export default function AdminSetupPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (showSignUp) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 p-3 bg-blue-100 rounded-full w-fit">
+              <UserPlus className="h-8 w-8 text-blue-600" />
+            </div>
+            <CardTitle className="text-2xl">Admin Sign Up</CardTitle>
+            <p className="text-gray-600 text-sm">
+              Create your Clerk account to access admin features
+            </p>
+          </CardHeader>
+          
+          <CardContent>
+            <SignUp 
+              appearance={{
+                elements: {
+                  formButtonPrimary: 'bg-blue-600 hover:bg-blue-700',
+                  card: 'shadow-none',
+                  headerTitle: 'hidden',
+                  headerSubtitle: 'hidden'
+                }
+              }}
+            />
+            
+            <div className="mt-4 text-center">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowSignUp(false)}
+                className="text-sm"
+              >
+                Back to Setup
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (
@@ -116,10 +159,21 @@ export default function AdminSetupPage() {
                   Create Another
                 </Button>
                 <Button 
-                  onClick={() => router.push('/admin')}
+                  onClick={() => setShowSignUp(true)}
                   className="flex-1"
                 >
-                  Go to Admin
+                  Sign Up with Clerk
+                </Button>
+              </div>
+              
+              <div className="text-center">
+                <Button 
+                  type="button" 
+                  variant="link" 
+                  onClick={() => router.push('/admin')}
+                  className="text-sm"
+                >
+                  Already have admin access? Go to Admin Dashboard
                 </Button>
               </div>
             </div>

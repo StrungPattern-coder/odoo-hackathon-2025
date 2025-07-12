@@ -5,6 +5,8 @@ export default authMiddleware({
     '/',
     '/sign-in(.*)',
     '/sign-up(.*)',
+    '/admin/setup',
+    '/admin',
     '/api/webhooks(.*)',
   ],
   ignoredRoutes: [

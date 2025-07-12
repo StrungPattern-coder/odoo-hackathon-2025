@@ -126,10 +126,10 @@ export default function BrowsePage() {
       }
 
       setShowRequestModal(false)
-      setSelectedUser(null)
-      setRequestData({ offeredSkill: '', wantedSkill: '', message: '' })
+    setSelectedUser(null)
+    setRequestData({ offeredSkill: '', wantedSkill: '', message: '' })
       
-      // Show success message
+    // Show success message
       alert('Swap request sent successfully!')
     } catch (error) {
       console.error('Error creating swap request:', error)
@@ -230,7 +230,7 @@ export default function BrowsePage() {
             users.map((user) => (
               <Card key={user.id} className="hover:shadow-lg transition-all duration-200">
                 <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-3">
                       <div className="relative">
                         <img
@@ -239,9 +239,9 @@ export default function BrowsePage() {
                           className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
                         />
                         <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
-                          user.availability === 'available' ? 'bg-green-500' : 
-                          user.availability === 'busy' ? 'bg-orange-500' : 'bg-gray-500'
-                        }`}></div>
+                        user.availability === 'available' ? 'bg-green-500' : 
+                        user.availability === 'busy' ? 'bg-orange-500' : 'bg-gray-500'
+                      }`}></div>
                       </div>
                       <div>
                         <CardTitle className="text-lg">{user.name}</CardTitle>
@@ -251,9 +251,9 @@ export default function BrowsePage() {
                       </div>
                     </div>
                     <Badge className={getAvailabilityColor(user.availability)}>
-                      {user.availability}
-                    </Badge>
-                  </div>
+                          {user.availability}
+                        </Badge>
+                      </div>
                 </CardHeader>
                 
                 <CardContent className="space-y-4">
@@ -275,25 +275,25 @@ export default function BrowsePage() {
                       <div className="flex flex-wrap gap-1">
                         {user.skillsOffered.slice(0, 3).map((skill, index) => (
                           <Badge key={index} variant="secondary" className="text-xs">
-                            {skill}
-                          </Badge>
-                        ))}
+                              {skill}
+                            </Badge>
+                          ))}
                         {user.skillsOffered.length > 3 && (
                           <Badge variant="outline" className="text-xs">
                             +{user.skillsOffered.length - 3} more
                           </Badge>
                         )}
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div>
+                      
+                      <div>
                       <h4 className="text-sm font-semibold text-gray-900 mb-2">Wants</h4>
                       <div className="flex flex-wrap gap-1">
                         {user.skillsWanted.slice(0, 3).map((skill, index) => (
                           <Badge key={index} variant="outline" className="text-xs">
-                            {skill}
-                          </Badge>
-                        ))}
+                              {skill}
+                            </Badge>
+                          ))}
                         {user.skillsWanted.length > 3 && (
                           <Badge variant="outline" className="text-xs">
                             +{user.skillsWanted.length - 3} more
@@ -306,13 +306,13 @@ export default function BrowsePage() {
                   <div className="pt-4">
                     <Dialog open={showRequestModal && selectedUser?.id === user.id} onOpenChange={setShowRequestModal}>
                       <DialogTrigger asChild>
-                        <Button 
+                    <Button
                           className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                          onClick={() => handleRequest(user.id, user.name)}
-                        >
+                      onClick={() => handleRequest(user.id, user.name)}
+                    >
                           <Send className="w-4 h-4 mr-2" />
-                          Request Swap
-                        </Button>
+                      Request Swap
+                    </Button>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-md">
                         <DialogHeader>
@@ -349,7 +349,7 @@ export default function BrowsePage() {
                                 ))}
                               </SelectContent>
                             </Select>
-                          </div>
+                    </div>
                           
                           <div>
                             <label className="text-sm font-medium text-gray-700">Message (Optional)</label>
@@ -359,7 +359,7 @@ export default function BrowsePage() {
                               onChange={(e) => setRequestData(prev => ({ ...prev, message: e.target.value }))}
                               rows={3}
                             />
-                          </div>
+                  </div>
                           
                           <div className="flex space-x-3 pt-4">
                             <Button variant="outline" onClick={handleCloseModals} className="flex-1">
@@ -372,11 +372,11 @@ export default function BrowsePage() {
                             >
                               Send Request
                             </Button>
-                          </div>
-                        </div>
+                </div>
+              </div>
                       </DialogContent>
                     </Dialog>
-                  </div>
+            </div>
                 </CardContent>
               </Card>
             ))
@@ -387,24 +387,24 @@ export default function BrowsePage() {
         {users.length > 0 && (
           <div className="flex justify-center mt-8">
             <div className="flex space-x-2">
-              <Button
-                variant="outline"
+                <Button
+                  variant="outline"
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
+                  disabled={currentPage === 1}
                 className="px-4 py-2"
-              >
-                Previous
-              </Button>
-              
-              <Button
-                variant="outline"
+                >
+                  Previous
+                </Button>
+                
+                <Button
+                  variant="outline"
                 onClick={() => setCurrentPage(currentPage + 1)}
                 disabled={users.length < usersPerPage}
                 className="px-4 py-2"
-              >
-                Next
-              </Button>
-            </div>
+                >
+                  Next
+                </Button>
+              </div>
           </div>
         )}
       </main>
