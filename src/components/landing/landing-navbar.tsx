@@ -5,28 +5,22 @@ import { Button } from '@/components/ui/button'
 import { SignInButton, SignUpButton, useUser, useClerk } from '@clerk/nextjs'
 import { Menu, X, Zap, User } from 'lucide-react'
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+
+const navItems = [
+  { name: 'Features', href: '#features' },
+  { name: 'How It Works', href: '#how-it-works' },
+  { name: 'About', href: '#about' },
+]
 
 export function LandingNavbar() {
   const { isSignedIn } = useUser()
   const clerk = useClerk()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-  const navItems = [
-    { name: 'Features', href: '#features' },
-    { name: 'How It Works', href: '#how-it-works' },
-    { name: 'Stats', href: '#stats' },
-  ]
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
-    <motion.nav 
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
+        <div className="flex justify-between items-center h-14">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 cursor-pointer">
             <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
@@ -38,12 +32,12 @@ export function LandingNavbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-2">
             {navItems.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium"
+                className="px-4 py-2 text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium rounded-full hover:bg-blue-50"
               >
                 {item.name}
               </Link>
@@ -51,104 +45,97 @@ export function LandingNavbar() {
           </div>
 
           {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-3">
             {isSignedIn ? (
               <>
-                <Button asChild variant="outline" className="flex items-center gap-2">
+                <Button asChild variant="outline" className="rounded-full flex items-center gap-2">
                   <Link href="/dashboard/profile">
                     <User className="h-4 w-4" />
                     My Profile
                   </Link>
                 </Button>
-                <Button asChild>
+                <Button asChild className="rounded-full">
                   <Link href="/dashboard">Dashboard</Link>
                 </Button>
-                <Button variant="outline" onClick={async () => { await clerk.signOut(); window.location.href = '/sign-in'; }} className="flex items-center gap-2">
-                  <i className="fa-solid fa-right-from-bracket"></i>
+                <Button variant="outline" onClick={async () => { await clerk.signOut(); window.location.href = '/sign-in'; }} className="rounded-full">
                   Logout
                 </Button>
               </>
             ) : (
               <>
                 <SignInButton mode="modal">
-                  <Button variant="ghost">Sign In</Button>
+                  <Button variant="ghost" className="rounded-full">Sign In</Button>
                 </SignInButton>
                 <SignUpButton mode="modal">
-                  <Button>Get Started</Button>
+                  <Button className="rounded-full">Get Started</Button>
                 </SignUpButton>
               </>
             )}
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? (
-              <X className="h-6 w-6 text-gray-600" />
-            ) : (
-              <Menu className="h-6 w-6 text-gray-600" />
-            )}
-          </button>
+          <div className="md:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2"
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
         </div>
-      </div>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden bg-white border-t border-gray-200"
-          >
-            <div className="px-4 py-4 space-y-4">
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden py-4 border-t border-gray-200">
+            <div className="flex flex-col space-y-3">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="block text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium"
-                  onClick={() => setIsMenuOpen(false)}
+                  className="px-4 py-2 text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium rounded-full hover:bg-blue-50"
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
-              <div className="pt-4 border-t border-gray-200 space-y-2">
+              
+              <div className="pt-4 border-t border-gray-200">
                 {isSignedIn ? (
-                  <>
-                    <Button asChild variant="outline" className="w-full flex items-center gap-2">
+                  <div className="flex flex-col space-y-2">
+                    <Button asChild variant="outline" className="rounded-full flex items-center gap-2">
                       <Link href="/dashboard/profile">
                         <User className="h-4 w-4" />
                         My Profile
                       </Link>
                     </Button>
-                    <Button asChild className="w-full">
+                    <Button asChild className="rounded-full">
                       <Link href="/dashboard">Dashboard</Link>
                     </Button>
-                    <Button variant="outline" className="w-full flex items-center gap-2" onClick={async () => { await clerk.signOut(); window.location.href = '/sign-in'; }}>
-                      <i className="fa-solid fa-right-from-bracket"></i>
+                    <Button variant="outline" className="rounded-full" onClick={async () => { await clerk.signOut(); window.location.href = '/sign-in'; }}>
                       Logout
                     </Button>
-                  </>
+                  </div>
                 ) : (
-                  <>
+                  <div className="flex flex-col space-y-2">
                     <SignInButton mode="modal">
-                      <Button variant="ghost" className="w-full">
-                        Sign In
-                      </Button>
+                      <Button variant="ghost" className="rounded-full">Sign In</Button>
                     </SignInButton>
                     <SignUpButton mode="modal">
-                      <Button className="w-full">Get Started</Button>
+                      <Button className="rounded-full">Get Started</Button>
                     </SignUpButton>
-                  </>
+                  </div>
                 )}
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </motion.nav>
+      </div>
+    </nav>
   )
 }

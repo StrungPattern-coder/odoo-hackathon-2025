@@ -1,92 +1,96 @@
 'use client'
 
-import { useState } from 'react'
-import { Search, User, Check, X, Clock, Star } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Search, User, Check, X, Clock, Star, Trash2, MessageSquare } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { DashboardNav } from '@/components/dashboard/dashboard-nav'
-
-interface SwapRequest {
-  id: string
-  requesterName: string
-  requesterPhoto: string
-  skillOffered: string
-  skillWanted: string
-  rating: number
-  maxRating: number
-  status: 'pending' | 'accepted' | 'rejected' | 'completed'
-  createdAt: string
-}
-
-const mockSwapRequests: SwapRequest[] = [
-  {
-    id: '1',
-    requesterName: 'Marc Demo',
-    requesterPhoto: '/api/placeholder/120/120',
-    skillOffered: 'Java Script',
-    skillWanted: 'Kotlin',
-    rating: 3.4,
-    maxRating: 5,
-    status: 'pending',
-    createdAt: '2024-01-15'
-  },
-  {
-    id: '2',
-    requesterName: 'Sarah Chen',
-    requesterPhoto: '/api/placeholder/120/120',
-    skillOffered: 'React',
-    skillWanted: 'UI/UX Design',
-    rating: 4.8,
-    maxRating: 5,
-    status: 'rejected',
-    createdAt: '2024-01-14'
-  },
-  {
-    id: '3',
-    requesterName: 'Alex Rodriguez',
-    requesterPhoto: '/api/placeholder/120/120',
-    skillOffered: 'Python',
-    skillWanted: 'Machine Learning',
-    rating: 4.2,
-    maxRating: 5,
-    status: 'pending',
-    createdAt: '2024-01-13'
-  },
-  {
-    id: '4',
-    requesterName: 'Emma Johnson',
-    requesterPhoto: '/api/placeholder/120/120',
-    skillOffered: 'Graphic Design',
-    skillWanted: 'Web Development',
-    rating: 3.9,
-    maxRating: 5,
-    status: 'accepted',
-    createdAt: '2024-01-12'
-  },
-  {
-    id: '5',
-    requesterName: 'Joe Wilson',
-    requesterPhoto: '/api/placeholder/120/120',
-    skillOffered: 'Node.js',
-    skillWanted: 'DevOps',
-    rating: 4.1,
-    maxRating: 5,
-    status: 'completed',
-    createdAt: '2024-01-11'
-  }
-]
+import { useCurrentUser } from '@/hooks/use-auth'
+import { supabase } from '@/lib/supabase'
+import { SwapRequest } from '@/types'
 
 export default function SwapsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedStatus, setSelectedStatus] = useState<string>('all')
   const [currentPage, setCurrentPage] = useState(1)
-  const requestsPerPage = 3
+  const [swapRequests, setSwapRequests] = useState<SwapRequest[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const { supabaseUser } = useCurrentUser()
+  const requestsPerPage = 5
 
-  const filteredRequests = mockSwapRequests.filter(request => {
-    const matchesSearch = request.requesterName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.skillOffered.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.skillWanted.toLowerCase().includes(searchTerm.toLowerCase())
+  // Fetch swap requests
+  const fetchSwapRequests = async () => {
+    if (!supabaseUser) return
+
+    try {
+      setLoading(true)
+      setError(null)
+
+      const { data, error: supabaseError } = await supabase
+        .from('swap_requests')
+        .select(`
+          *,
+          requester:users!requester_id(*),
+          provider:users!provider_id(*),
+          requester_skill:user_skills!requester_skill_id(*, skill:skills(*)),
+          provider_skill:user_skills!provider_skill_id(*, skill:skills(*))
+        `)
+        .or(`requester_id.eq.${supabaseUser.id},provider_id.eq.${supabaseUser.id}`)
+        .order('created_at', { ascending: false })
+
+      if (supabaseError) {
+        setError(supabaseError.message)
+        setSwapRequests([])
+      } else {
+        setSwapRequests(data || [])
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error')
+      setSwapRequests([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchSwapRequests()
+
+    // Set up real-time subscription
+    if (supabaseUser) {
+      const subscription = supabase
+        .channel('swap_requests')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'swap_requests',
+            filter: `requester_id=eq.${supabaseUser.id},provider_id=eq.${supabaseUser.id}`,
+          },
+          () => {
+            fetchSwapRequests()
+          }
+        )
+        .subscribe()
+
+      return () => {
+        subscription.unsubscribe()
+      }
+    }
+  }, [supabaseUser])
+
+  const filteredRequests = swapRequests.filter(request => {
+    const requesterName = request.requester ? `${request.requester.first_name} ${request.requester.last_name}` : ''
+    const providerName = request.provider ? `${request.provider.first_name} ${request.provider.last_name}` : ''
+    const requesterSkill = request.requester_skill?.skill?.name || ''
+    const providerSkill = request.provider_skill?.skill?.name || ''
+    
+    const matchesSearch = requesterName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      providerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      requesterSkill.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      providerSkill.toLowerCase().includes(searchTerm.toLowerCase())
     
     const matchesStatus = selectedStatus === 'all' || request.status === selectedStatus
     
@@ -109,6 +113,8 @@ export default function SwapsPage() {
         return 'bg-red-100 text-red-800 border-red-200'
       case 'completed':
         return 'bg-green-100 text-green-800 border-green-200'
+      case 'cancelled':
+        return 'bg-gray-100 text-gray-800 border-gray-200'
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200'
     }
@@ -124,19 +130,93 @@ export default function SwapsPage() {
         return <X className="w-4 h-4" />
       case 'completed':
         return <Check className="w-4 h-4" />
+      case 'cancelled':
+        return <X className="w-4 h-4" />
       default:
         return null
     }
   }
 
-  const handleAccept = (requestId: string) => {
-    console.log('Accepting request:', requestId)
-    // Here you would update the request status in your backend
+  const handleAccept = async (requestId: string) => {
+    try {
+      const response = await fetch(`/api/swaps/${requestId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'accepted' }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to accept request')
+      }
+
+      // The real-time subscription will automatically update the UI
+    } catch (error) {
+      console.error('Error accepting request:', error)
+      setError('Failed to accept request')
+    }
   }
 
-  const handleReject = (requestId: string) => {
-    console.log('Rejecting request:', requestId)
-    // Here you would update the request status in your backend
+  const handleReject = async (requestId: string) => {
+    try {
+      const response = await fetch(`/api/swaps/${requestId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'rejected' }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to reject request')
+      }
+
+      // The real-time subscription will automatically update the UI
+    } catch (error) {
+      console.error('Error rejecting request:', error)
+      setError('Failed to reject request')
+    }
+  }
+
+  const handleDelete = async (requestId: string) => {
+    try {
+      const response = await fetch(`/api/swaps/${requestId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete request')
+      }
+
+      // The real-time subscription will automatically update the UI
+    } catch (error) {
+      console.error('Error deleting request:', error)
+      setError('Failed to delete request')
+    }
+  }
+
+  const isUserRequester = (request: SwapRequest) => {
+    return request.requester_id === supabaseUser?.id
+  }
+
+  const canUserAct = (request: SwapRequest) => {
+    if (request.status !== 'pending') return false
+    return isUserRequester(request) || request.provider_id === supabaseUser?.id
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <DashboardNav />
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading swap requests...</p>
+          </div>
+        </main>
+      </div>
+    )
   }
 
   return (
@@ -148,6 +228,12 @@ export default function SwapsPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Swap Requests</h1>
           <p className="text-lg text-gray-600">Manage your skill swap requests and responses.</p>
         </div>
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-800">{error}</p>
+          </div>
+        )}
 
         {/* Search and Filter Bar */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
@@ -174,161 +260,179 @@ export default function SwapsPage() {
                 <option value="accepted">Accepted</option>
                 <option value="rejected">Rejected</option>
                 <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
               </select>
             </div>
           </div>
         </div>
 
-        {/* Swap Request Cards */}
-        <div className="space-y-6 mb-10">
-          {currentRequests.map((request) => (
-            <div key={request.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden">
-              <div className="p-8">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-6 flex-1">
-                    {/* Profile Photo */}
-                    <div className="relative flex-shrink-0">
-                      <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-                        {request.requesterName.split(' ').map(n => n[0]).join('')}
-                      </div>
-                    </div>
-                    
-                    {/* Request Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-4">
-                        <h3 className="text-2xl font-semibold text-gray-900">{request.requesterName}</h3>
-                        <Badge className={`${getStatusColor(request.status)} font-medium px-3 py-1.5 border`}>
-                          <div className="flex items-center gap-1">
-                            {getStatusIcon(request.status)}
-                            <span className="capitalize">{request.status}</span>
+        {/* Swap Requests List */}
+        <div className="space-y-6">
+          {currentRequests.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-gray-400 mb-4">
+                <MessageSquare className="h-12 w-12 mx-auto" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No swap requests found</h3>
+              <p className="text-gray-600">You don't have any swap requests matching your criteria.</p>
+            </div>
+          ) : (
+            currentRequests.map((request) => {
+              const requesterName = request.requester ? `${request.requester.first_name} ${request.requester.last_name}` : 'Unknown User'
+              const providerName = request.provider ? `${request.provider.first_name} ${request.provider.last_name}` : 'Unknown User'
+              const requesterSkill = request.requester_skill?.skill?.name || 'Unknown Skill'
+              const providerSkill = request.provider_skill?.skill?.name || 'Unknown Skill'
+              const requesterPhoto = request.requester?.image_url || '/api/placeholder/120/120'
+              const providerPhoto = request.provider?.image_url || '/api/placeholder/120/120'
+              
+              return (
+                <div key={request.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden">
+                  <div className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-4 mb-4">
+                          <div className="flex items-center space-x-3">
+                            <div className="relative">
+                              <img
+                                src={requesterPhoto}
+                                alt={requesterName}
+                                className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
+                              />
+                              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-gray-900">{requesterName}</h3>
+                              <p className="text-sm text-gray-500">wants to swap</p>
+                            </div>
                           </div>
-                        </Badge>
-                      </div>
-                      
-                      {/* Skills Exchange */}
-                      <div className="mb-4">
-                        <h4 className="text-sm font-semibold text-gray-900 mb-2 uppercase tracking-wide">Skills Exchange</h4>
-                        <div className="flex items-center gap-4">
-                          <div className="flex flex-col">
-                            <span className="text-xs text-gray-500 mb-1">Skills Offered →</span>
-                            <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 font-medium px-3 py-1.5">
-                              {request.skillOffered}
+                          
+                          <div className="flex items-center space-x-2">
+                            <Badge variant="secondary" className="px-3 py-1">
+                              {requesterSkill}
+                            </Badge>
+                            <span className="text-gray-400">↔</span>
+                            <Badge variant="secondary" className="px-3 py-1">
+                              {providerSkill}
                             </Badge>
                           </div>
-                          <div className="flex flex-col">
-                            <span className="text-xs text-gray-500 mb-1">Skills Wanted →</span>
-                            <Badge variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50 font-medium px-3 py-1.5">
-                              {request.skillWanted}
+                          
+                          <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-2 bg-gray-50 rounded-lg px-3 py-2 w-fit">
+                              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                              <span className="font-semibold text-gray-900 text-base">
+                                {request.requester?.average_rating || 0}
+                              </span>
+                              <span className="text-gray-500">/ 5</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {request.message && (
+                          <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                            <p className="text-gray-700">{request.message}</p>
+                          </div>
+                        )}
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <Badge className={getStatusColor(request.status)}>
+                              <div className="flex items-center space-x-1">
+                                {getStatusIcon(request.status)}
+                                <span className="capitalize">{request.status}</span>
+                              </div>
                             </Badge>
+                            <span className="text-sm text-gray-500">
+                              {new Date(request.created_at).toLocaleDateString()}
+                            </span>
                           </div>
                         </div>
                       </div>
                       
-                      {/* Rating */}
-                      <div className="flex items-center space-x-2 bg-gray-50 rounded-lg px-3 py-2 w-fit">
-                        <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                        <span className="font-semibold text-gray-900 text-base">
-                          {request.rating}
-                        </span>
-                        <span className="text-gray-500">/ {request.maxRating}</span>
+                      {/* Action Buttons */}
+                      <div className="flex flex-col items-end space-y-4 flex-shrink-0 ml-6">
+                        {canUserAct(request) && (
+                          <div className="flex space-x-3">
+                            {!isUserRequester(request) && (
+                              <>
+                                <Button
+                                  onClick={() => handleAccept(request.id)}
+                                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 text-base font-medium shadow-sm hover:shadow-md transition-all"
+                                >
+                                  <Check className="w-4 h-4 mr-2" />
+                                  Accept
+                                </Button>
+                                <Button
+                                  onClick={() => handleReject(request.id)}
+                                  variant="outline"
+                                  className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 px-6 py-2.5 text-base font-medium"
+                                >
+                                  <X className="w-4 h-4 mr-2" />
+                                  Reject
+                                </Button>
+                              </>
+                            )}
+                            {isUserRequester(request) && (
+                              <Button
+                                onClick={() => handleDelete(request.id)}
+                                variant="outline"
+                                className="border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 px-6 py-2.5 text-base font-medium"
+                              >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Cancel
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                        
+                        {request.status === 'accepted' && (
+                          <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-base font-medium shadow-sm hover:shadow-md transition-all">
+                            Start Chat
+                          </Button>
+                        )}
                       </div>
-                    </div>
-                  </div>
-                  
-                  {/* Action Buttons */}
-                  <div className="flex flex-col items-end space-y-4 flex-shrink-0 ml-6">
-                    {request.status === 'pending' && (
-                      <div className="flex space-x-3">
-                        <Button
-                          onClick={() => handleAccept(request.id)}
-                          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 text-base font-medium shadow-sm hover:shadow-md transition-all"
-                        >
-                          <Check className="w-4 h-4 mr-2" />
-                          Accept
-                        </Button>
-                        <Button
-                          onClick={() => handleReject(request.id)}
-                          variant="outline"
-                          className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 px-6 py-2.5 text-base font-medium"
-                        >
-                          <X className="w-4 h-4 mr-2" />
-                          Reject
-                        </Button>
-                      </div>
-                    )}
-                    
-                    {request.status === 'accepted' && (
-                      <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-base font-medium shadow-sm hover:shadow-md transition-all">
-                        Start Chat
-                      </Button>
-                    )}
-                    
-                    {request.status === 'completed' && (
-                      <Button variant="outline" className="px-8 py-3 text-base font-medium">
-                        View Details
-                      </Button>
-                    )}
-                    
-                    <div className="text-sm text-gray-500">
-                      {new Date(request.createdAt).toLocaleDateString()}
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              )
+            })
+          )}
         </div>
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="px-6 py-2.5 font-medium"
-                >
-                  Previous
-                </Button>
-                
-                <div className="flex items-center space-x-2">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      onClick={() => setCurrentPage(page)}
-                      className={`w-12 h-12 p-0 font-medium ${currentPage === page ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
-                    >
-                      {page}
-                    </Button>
-                  ))}
-                </div>
-                
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                  className="px-6 py-2.5 font-medium"
-                >
-                  Next
-                </Button>
+          <div className="flex justify-center mt-8">
+            <div className="flex space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2"
+              >
+                Previous
+              </Button>
+              
+              <div className="flex space-x-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    onClick={() => setCurrentPage(page)}
+                    className="px-3 py-2"
+                  >
+                    {page}
+                  </Button>
+                ))}
               </div>
               
-              <div className="text-base text-gray-600 font-medium">
-                Page {currentPage} of {totalPages}
-              </div>
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2"
+              >
+                Next
+              </Button>
             </div>
-          </div>
-        )}
-
-        {/* No Results */}
-        {filteredRequests.length === 0 && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-16 text-center">
-            <User className="w-16 h-16 text-gray-300 mx-auto mb-6" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">No swap requests found</h3>
-            <p className="text-gray-600 text-lg">Try adjusting your search or filters to find more requests</p>
           </div>
         )}
       </main>
