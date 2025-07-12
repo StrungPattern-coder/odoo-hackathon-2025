@@ -60,7 +60,7 @@ export function HeroSection() {
   return (
     <section
       ref={heroRef}
-      className="min-h-screen flex items-center justify-center relative overflow-hidden"
+      className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16"
     >
       {/* Background Gradient */}
       <div className="absolute inset-0 hero-gradient" />
@@ -68,25 +68,25 @@ export function HeroSection() {
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="floating-icon absolute top-20 left-10 p-4 glass-morphism rounded-full"
+          className="floating-icon absolute top-24 sm:top-20 left-4 sm:left-10 p-3 sm:p-4 glass-morphism rounded-full"
           animate={{ y: [0, -20, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Zap className="h-8 w-8 text-[#8F6CD9]" />
+          <Zap className="h-6 w-6 sm:h-8 sm:w-8 text-[#8F6CD9]" />
         </motion.div>
         <motion.div
-          className="floating-icon absolute top-40 right-20 p-4 glass-morphism rounded-full"
+          className="floating-icon absolute top-44 sm:top-40 right-4 sm:right-20 p-3 sm:p-4 glass-morphism rounded-full"
           animate={{ y: [0, 20, 0] }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         >
-          <Users className="h-8 w-8 text-[#A68A56]" />
+          <Users className="h-6 w-6 sm:h-8 sm:w-8 text-[#A68A56]" />
         </motion.div>
         <motion.div
-          className="floating-icon absolute bottom-40 left-20 p-4 glass-morphism rounded-full"
+          className="floating-icon absolute bottom-40 left-4 sm:left-20 p-3 sm:p-4 glass-morphism rounded-full"
           animate={{ y: [0, -15, 0] }}
           transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         >
-          <Sparkles className="h-8 w-8 text-[#340773]" />
+          <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-[#340773]" />
         </motion.div>
       </div>
 

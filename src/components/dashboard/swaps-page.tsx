@@ -236,8 +236,8 @@ export default function SwapsPage() {
         )}
 
         {/* Search and Filter Bar */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-8">
+          <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
@@ -253,7 +253,7 @@ export default function SwapsPage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="h-12 border border-gray-200 rounded-lg px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white min-w-[160px]"
+                className="h-12 border border-gray-200 rounded-lg px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white w-full sm:min-w-[160px]"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
@@ -286,110 +286,120 @@ export default function SwapsPage() {
               const providerPhoto = request.provider?.image_url || '/api/placeholder/120/120'
               
               return (
-            <div key={request.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden">
-                  <div className="p-6">
-                <div className="flex items-start justify-between">
+                <div key={request.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden">
+                  <div className="p-4 sm:p-6">
+                    {/* Header Section */}
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                       <div className="flex-1">
-                        <div className="flex items-center space-x-4 mb-4">
-                          <div className="flex items-center space-x-3">
-                            <div className="relative">
-                              <img
-                                src={requesterPhoto}
-                                alt={requesterName}
-                                className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
-                              />
-                              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
-                            </div>
-                            <div>
-                              <h3 className="font-semibold text-gray-900">{requesterName}</h3>
-                              <p className="text-sm text-gray-500">wants to swap</p>
-                      </div>
-                    </div>
-                    
-                          <div className="flex items-center space-x-2">
-                            <Badge variant="secondary" className="px-3 py-1">
+                        {/* User Info */}
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className="relative flex-shrink-0">
+                            <img
+                              src={requesterPhoto}
+                              alt={requesterName}
+                              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-gray-200"
+                            />
+                            <div className="absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">{requesterName}</h3>
+                            <p className="text-xs sm:text-sm text-gray-500">wants to swap</p>
+                          </div>
+                        </div>
+                        
+                        {/* Skills Section */}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
+                          <div className="flex flex-col xs:flex-row xs:items-center gap-2">
+                            <Badge variant="secondary" className="px-2 py-1 text-xs sm:text-sm w-fit">
                               {requesterSkill}
                             </Badge>
-                            <span className="text-gray-400">↔</span>
-                            <Badge variant="secondary" className="px-3 py-1">
+                            <span className="text-gray-400 hidden xs:inline">↔</span>
+                            <span className="text-gray-400 xs:hidden text-center">↓</span>
+                            <Badge variant="secondary" className="px-2 py-1 text-xs sm:text-sm w-fit">
                               {providerSkill}
                             </Badge>
                           </div>
                           
-                          <div className="flex items-center space-x-3">
-                            <div className="flex items-center space-x-2 bg-gray-50 rounded-lg px-3 py-2 w-fit">
-                              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                              <span className="font-semibold text-gray-900 text-base">
-                                {request.requester?.average_rating || 0}
-                              </span>
-                              <span className="text-gray-500">/ 5</span>
-                            </div>
+                          {/* Rating */}
+                          <div className="flex items-center space-x-2 bg-gray-50 rounded-lg px-2 py-1 sm:px-3 sm:py-2 w-fit">
+                            <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-yellow-400 text-yellow-400" />
+                            <span className="font-semibold text-gray-900 text-sm sm:text-base">
+                              {request.requester?.average_rating || 0}
+                            </span>
+                            <span className="text-gray-500 text-xs sm:text-sm">/ 5</span>
                           </div>
+                        </div>
                       </div>
                       
-                        {request.message && (
-                          <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-                            <p className="text-gray-700">{request.message}</p>
+                      {/* Status Badge */}
+                      <div className="flex justify-between sm:justify-end items-center">
+                        <Badge className={getStatusColor(request.status)}>
+                          <div className="flex items-center space-x-1">
+                            {getStatusIcon(request.status)}
+                            <span className="capitalize text-xs sm:text-sm">{request.status}</span>
                           </div>
-                        )}
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-4">
-                            <Badge className={getStatusColor(request.status)}>
-                              <div className="flex items-center space-x-1">
-                                {getStatusIcon(request.status)}
-                                <span className="capitalize">{request.status}</span>
-                              </div>
-                            </Badge>
-                            <span className="text-sm text-gray-500">
-                              {new Date(request.created_at).toLocaleDateString()}
-                            </span>
+                        </Badge>
+                        <span className="text-xs sm:text-sm text-gray-500 sm:hidden">
+                          {new Date(request.created_at).toLocaleDateString()}
+                        </span>
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Action Buttons */}
-                  <div className="flex flex-col items-end space-y-4 flex-shrink-0 ml-6">
-                        {canUserAct(request) && (
-                      <div className="flex space-x-3">
-                            {!isUserRequester(request) && (
-                              <>
-                        <Button
-                          onClick={() => handleAccept(request.id)}
-                          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 text-base font-medium shadow-sm hover:shadow-md transition-all"
-                        >
-                          <Check className="w-4 h-4 mr-2" />
-                          Accept
-                        </Button>
-                        <Button
-                          onClick={() => handleReject(request.id)}
-                          variant="outline"
-                          className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 px-6 py-2.5 text-base font-medium"
-                        >
-                          <X className="w-4 h-4 mr-2" />
-                          Reject
-                        </Button>
-                              </>
-                            )}
-                            {isUserRequester(request) && (
-                              <Button
-                                onClick={() => handleDelete(request.id)}
-                                variant="outline"
-                                className="border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 px-6 py-2.5 text-base font-medium"
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Cancel
-                              </Button>
-                            )}
+                    
+                    {/* Message Section */}
+                    {request.message && (
+                      <div className="mb-4 p-3 sm:p-4 bg-gray-50 rounded-lg">
+                        <p className="text-gray-700 text-sm sm:text-base">{request.message}</p>
                       </div>
                     )}
                     
-                    {request.status === 'accepted' && (
-                      <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-base font-medium shadow-sm hover:shadow-md transition-all">
-                        Start Chat
-                      </Button>
-                    )}
+                    {/* Footer Section */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="hidden sm:flex items-center space-x-4">
+                        <span className="text-sm text-gray-500">
+                          {new Date(request.created_at).toLocaleDateString()}
+                        </span>
                       </div>
+                      
+                      {/* Action Buttons */}
+                      {canUserAct(request) && (
+                        <div className="flex flex-col xs:flex-row gap-2 w-full sm:w-auto">
+                          {!isUserRequester(request) && (
+                            <>
+                              <Button
+                                onClick={() => handleAccept(request.id)}
+                                className="bg-green-600 hover:bg-green-700 text-white px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-medium shadow-sm hover:shadow-md transition-all w-full xs:w-auto"
+                              >
+                                <Check className="w-4 h-4 mr-1 sm:mr-2" />
+                                Accept
+                              </Button>
+                              <Button
+                                onClick={() => handleReject(request.id)}
+                                variant="outline"
+                                className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-medium w-full xs:w-auto"
+                              >
+                                <X className="w-4 h-4 mr-1 sm:mr-2" />
+                                Reject
+                              </Button>
+                            </>
+                          )}
+                          {isUserRequester(request) && (
+                            <Button
+                              onClick={() => handleDelete(request.id)}
+                              variant="outline"
+                              className="border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-medium w-full xs:w-auto"
+                            >
+                              <Trash2 className="w-4 h-4 mr-1 sm:mr-2" />
+                              Cancel
+                            </Button>
+                          )}
+                        </div>
+                      )}
+                      
+                      {request.status === 'accepted' && (
+                        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-8 py-2 sm:py-3 text-sm sm:text-base font-medium shadow-sm hover:shadow-md transition-all w-full sm:w-auto">
+                          Start Chat
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -400,39 +410,52 @@ export default function SwapsPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center mt-8">
-            <div className="flex space-x-2">
-                <Button
-                  variant="outline"
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                className="px-4 py-2"
-                >
-                  Previous
-                </Button>
-                
+                disabled={currentPage === 1}
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base"
+              >
+                Previous
+              </Button>
+              
               <div className="flex space-x-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let page;
+                  if (totalPages <= 5) {
+                    page = i + 1;
+                  } else if (currentPage <= 3) {
+                    page = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    page = totalPages - 4 + i;
+                  } else {
+                    page = currentPage - 2 + i;
+                  }
+                  
+                  return (
                     <Button
                       key={page}
                       variant={currentPage === page ? "default" : "outline"}
                       onClick={() => setCurrentPage(page)}
-                    className="px-3 py-2"
+                      className="px-2 sm:px-3 py-2 text-sm sm:text-base w-8 sm:w-auto"
                     >
                       {page}
                     </Button>
-                  ))}
-                </div>
-                
-                <Button
-                  variant="outline"
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                className="px-4 py-2"
-                >
-                  Next
-                </Button>
+                  );
+                })}
               </div>
+              
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base"
+              >
+                Next
+              </Button>
+            </div>
           </div>
         )}
       </main>

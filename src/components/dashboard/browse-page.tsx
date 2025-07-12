@@ -187,8 +187,8 @@ export default function BrowsePage() {
         )}
 
         {/* Search and Filter Bar */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-8">
+          <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
@@ -217,7 +217,7 @@ export default function BrowsePage() {
         </div>
 
         {/* Users Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {users.length === 0 ? (
             <div className="col-span-full text-center py-12">
               <div className="text-gray-400 mb-4">
@@ -229,73 +229,73 @@ export default function BrowsePage() {
           ) : (
             users.map((user) => (
               <Card key={user.id} className="hover:shadow-lg transition-all duration-200">
-                <CardHeader className="pb-4">
-                <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="relative">
+                <CardHeader className="pb-3 sm:pb-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-3 min-w-0 flex-1">
+                      <div className="relative flex-shrink-0">
                         <img
                           src={user.profilePhoto}
                           alt={user.name}
-                          className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
+                          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-gray-200"
                         />
                         <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
-                        user.availability === 'available' ? 'bg-green-500' : 
-                        user.availability === 'busy' ? 'bg-orange-500' : 'bg-gray-500'
-                      }`}></div>
+                          user.availability === 'available' ? 'bg-green-500' : 
+                          user.availability === 'busy' ? 'bg-orange-500' : 'bg-gray-500'
+                        }`}></div>
                       </div>
-                      <div>
-                        <CardTitle className="text-lg">{user.name}</CardTitle>
+                      <div className="min-w-0 flex-1">
+                        <CardTitle className="text-base sm:text-lg truncate">{user.name}</CardTitle>
                         {user.location && (
-                          <p className="text-sm text-gray-500">{user.location}</p>
+                          <p className="text-xs sm:text-sm text-gray-500 truncate">{user.location}</p>
                         )}
                       </div>
                     </div>
                     <Badge className={getAvailabilityColor(user.availability)}>
-                          {user.availability}
-                        </Badge>
-                      </div>
+                      {user.availability}
+                    </Badge>
+                  </div>
                 </CardHeader>
                 
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
                   {user.bio && (
-                    <p className="text-sm text-gray-600 line-clamp-2">{user.bio}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">{user.bio}</p>
                   )}
                   
-                  <div className="flex items-center space-x-2">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <div className="flex items-center space-x-2 text-sm">
+                    <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-yellow-400 text-yellow-400" />
                     <span className="font-semibold text-gray-900">{user.rating}</span>
                     <span className="text-gray-500">/ {user.maxRating}</span>
                     <span className="text-gray-400">•</span>
-                    <span className="text-sm text-gray-500">{user.totalSwaps} swaps</span>
+                    <span className="text-xs sm:text-sm text-gray-500">{user.totalSwaps} swaps</span>
                   </div>
                   
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     <div>
-                      <h4 className="text-sm font-semibold text-gray-900 mb-2">Offers</h4>
+                      <h4 className="text-xs sm:text-sm font-semibold text-gray-900 mb-1 sm:mb-2">Offers</h4>
                       <div className="flex flex-wrap gap-1">
                         {user.skillsOffered.slice(0, 3).map((skill, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                              {skill}
-                            </Badge>
-                          ))}
+                          <Badge key={index} variant="secondary" className="text-xs px-2 py-0.5">
+                            {skill}
+                          </Badge>
+                        ))}
                         {user.skillsOffered.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs px-2 py-0.5">
                             +{user.skillsOffered.length - 3} more
                           </Badge>
                         )}
-                        </div>
                       </div>
-                      
-                      <div>
-                      <h4 className="text-sm font-semibold text-gray-900 mb-2">Wants</h4>
+                    </div>
+                    
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-semibold text-gray-900 mb-1 sm:mb-2">Wants</h4>
                       <div className="flex flex-wrap gap-1">
                         {user.skillsWanted.slice(0, 3).map((skill, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                              {skill}
-                            </Badge>
-                          ))}
+                          <Badge key={index} variant="outline" className="text-xs px-2 py-0.5">
+                            {skill}
+                          </Badge>
+                        ))}
                         {user.skillsWanted.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs px-2 py-0.5">
                             +{user.skillsWanted.length - 3} more
                           </Badge>
                         )}

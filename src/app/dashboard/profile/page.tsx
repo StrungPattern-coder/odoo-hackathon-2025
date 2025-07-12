@@ -231,10 +231,10 @@ export default function ProfilePage() {
           <p className="text-gray-600 mt-2">Manage your profile information and skills</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
           {/* Profile Photo Card */}
-          <div className="lg:col-span-1">
-            <Card className="p-6 flex flex-col items-center justify-center">
+          <div className="xl:col-span-1">
+            <Card className="p-4 sm:p-6 flex flex-col items-center justify-center">
               <CardHeader className="text-center">
                 <CardTitle>
                 </CardTitle>
@@ -245,7 +245,7 @@ export default function ProfilePage() {
                     <img
                       src={photoPreview}
                       alt="Profile Photo"
-                      className="w-32 h-32 rounded-full object-cover border-4 border-purple-200 shadow-lg"
+                      className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-purple-200 shadow-lg"
                       onError={(e) => {
                         // Fallback to user icon if image fails to load
                         const target = e.target as HTMLImageElement
@@ -262,8 +262,8 @@ export default function ProfilePage() {
                   ) : null}
                   
                   {/* User Icon Fallback */}
-                  <div className={`w-32 h-32 rounded-full border-4 border-purple-200 shadow-lg bg-gray-100 flex items-center justify-center ${photoPreview && !photoPreview.includes('unsplash.com') ? 'hidden' : ''} user-icon-fallback`}>
-                    <User className="h-16 w-16 text-gray-400" />
+                  <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-purple-200 shadow-lg bg-gray-100 flex items-center justify-center ${photoPreview && !photoPreview.includes('unsplash.com') ? 'hidden' : ''} user-icon-fallback`}>
+                    <User className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400" />
                   </div>
                   
                   <label className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-lg cursor-pointer border border-purple-300 hover:bg-purple-50 transition-colors">
@@ -279,17 +279,17 @@ export default function ProfilePage() {
           </div>
 
           {/* Profile Information Card */}
-          <div className="lg:col-span-2">
-            <Card className="p-6">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Edit3 className="h-5 w-5" />
+          <div className="xl:col-span-2">
+            <Card className="p-4 sm:p-6">
+              <CardHeader className="px-0">
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                  <Edit3 className="h-4 w-4 sm:h-5 sm:w-5" />
                   Personal Information
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4 sm:space-y-6 px-0">
                 {/* Name */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label className="text-sm font-medium text-gray-700">First Name</Label>
                     <div className="mt-1 flex items-center gap-2">
@@ -299,20 +299,20 @@ export default function ProfilePage() {
                             name="first_name"
                             value={form.first_name}
                             onChange={handleChange}
-                            className="flex-1"
+                            className="flex-1 text-sm sm:text-base"
                             placeholder="Enter first name"
                           />
-                          <Button size="sm" onClick={handleSaveField} disabled={saving}>
+                          <Button size="sm" onClick={handleSaveField} disabled={saving} className="flex-shrink-0">
                             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                           </Button>
-                          <Button size="sm" variant="outline" onClick={() => setEditingField(null)}>
+                          <Button size="sm" variant="outline" onClick={() => setEditingField(null)} className="flex-shrink-0">
                             <X className="h-4 w-4" />
                           </Button>
                         </>
                       ) : (
                         <>
-                          <span className="flex-1 text-gray-900">{form.first_name || 'Not set'}</span>
-                          <Button size="sm" variant="ghost" onClick={() => setEditingField('first_name')}>
+                          <span className="flex-1 text-gray-900 text-sm sm:text-base truncate">{form.first_name || 'Not set'}</span>
+                          <Button size="sm" variant="ghost" onClick={() => setEditingField('first_name')} className="flex-shrink-0">
                             <Pencil className="h-4 w-4" />
                           </Button>
                         </>
