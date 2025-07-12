@@ -35,7 +35,7 @@ export function DashboardNav() {
         <div className="flex justify-between h-16">
           {/* Logo and Desktop Navigation */}
           <div className="flex">
-            <Link href="/dashboard" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2 cursor-pointer">
               <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
                 <Zap className="h-6 w-6 text-white" />
               </div>

@@ -1,147 +1,159 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { getUserSkills } from '@/lib/services/user-service'
+import { addUserSkill } from '@/lib/services/user-service'
 import { UserSkill } from '@/types'
-import { BookOpen, Plus, Star } from 'lucide-react'
-import Link from 'next/link'
 
 export function SkillsOverview() {
-  const [offeredSkills, setOfferedSkills] = useState<UserSkill[]>([])
-  const [wantedSkills, setWantedSkills] = useState<UserSkill[]>([])
-  const [loading, setLoading] = useState(true)
+  const skillSuggestions = [
+    "React.js",
+    "RESTful API design",
+    "CSS",
+    "Node.js",
+    "TensorFlow",
+    "FastAPI",
+    "Final Cut Pro",
+    "Photography"
+  ];
 
-  useEffect(() => {
-    async function loadSkills() {
-      try {
-        const skills = await getUserSkills()
-        setOfferedSkills(skills.filter(s => s.type === 'offered'))
-        setWantedSkills(skills.filter(s => s.type === 'wanted'))
-      } catch (error) {
-        console.error('Error loading skills:', error)
-      } finally {
-        setLoading(false)
+  const [search, setSearch] = useState("");
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState("");
+
+  const filteredSkills = skillSuggestions.filter(skill =>
+    skill.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleSkillClick = (skill: string) => {
+    setSelectedSkills(prev =>
+      prev.includes(skill)
+        ? prev.filter(s => s !== skill)
+        : [...prev, skill]
+    );
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveMsg("");
+    try {
+      // Fetch all skills from DB to map names to IDs
+      const { getAllSkills } = await import('@/lib/services/skill-service');
+      const allSkills = await getAllSkills();
+      for (const skillName of selectedSkills) {
+        // Try to find skill by name
+        let skillObj = allSkills.find(s => s.name.toLowerCase() === skillName.toLowerCase());
+        let skill_id = skillObj ? skillObj.id : null;
+        // If not found, add new skill to DB
+        if (!skill_id) {
+          const { supabase } = await import('@/lib/supabase');
+          const { data, error } = await supabase
+            .from('skills')
+            .insert({ name: skillName, is_approved: false, category: 'custom', created_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+            .select()
+            .single();
+          if (error || !data) throw error || new Error('Skill creation failed');
+          skill_id = data.id;
+        }
+        // Save user skill
+        if (skill_id) {
+          await addUserSkill({
+            skill_id,
+            type: 'wanted',
+            proficiency_level: 1
+          });
+        }
       }
+      setSaveMsg("Skills saved!");
+    } catch (err) {
+      setSaveMsg("Error saving skills. Please check your connection or try again.");
     }
-
-    loadSkills()
-  }, [])
-
-  const renderStars = (level: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`h-3 w-3 ${
-          i < level ? 'text-yellow-400 fill-current' : 'text-gray-300'
-        }`}
-      />
-    ))
-  }
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <Card className="animate-pulse">
-          <CardHeader>
-            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-3 bg-gray-200 rounded"></div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
+    setSaving(false);
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Offered Skills */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-lg">Skills I Offer</CardTitle>
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/dashboard/skills">
-              <Plus className="h-4 w-4 mr-1" />
-              Add
-            </Link>
-          </Button>
+    <div className="flex justify-center items-center min-h-[40vh]">
+      <Card className="w-full max-w-xl shadow-lg border border-[var(--primary)] bg-[var(--background)]">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-xl font-bold text-[var(--primary)]">Skills I Want</CardTitle>
         </CardHeader>
         <CardContent>
-          {offeredSkills.length === 0 ? (
-            <div className="text-center py-4">
-              <BookOpen className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-sm text-gray-600">No skills offered yet</p>
-              <Button variant="outline" size="sm" className="mt-2" asChild>
-                <Link href="/dashboard/skills">Add Skills</Link>
+          <div className="mb-4">
+            <input
+              type="text"
+              placeholder="Search or add a skill..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full p-3 border-2 border-[var(--accent)] rounded-lg focus:outline-none focus:border-[var(--primary)] bg-[var(--card)] text-[var(--secondary)]"
+            />
+          </div>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {filteredSkills.map((skill, idx) => (
+              <Button
+                key={idx}
+                variant={selectedSkills.includes(skill) ? "default" : "outline"}
+                onClick={() => handleSkillClick(skill)}
+                className={`transition-all duration-200 px-3 py-1 rounded-full text-xs font-medium max-w-[140px] truncate whitespace-nowrap
+                  ${selectedSkills.includes(skill)
+                    ? 'bg-[var(--accent)] text-white border-none'
+                    : 'bg-[var(--card)] text-[var(--highlight)] border border-[var(--accent)]'}
+                `}
+                style={{
+                  color: selectedSkills.includes(skill) ? '#fff' : '#A68A56',
+                  background: selectedSkills.includes(skill) ? '#8F6CD9' : 'var(--card)',
+                  borderColor: '#8F6CD9',
+                  fontSize: '0.85rem',
+                }}
+              >
+                {skill}
+              </Button>
+            ))}
+          </div>
+          {/* Add custom skill if not in suggestions */}
+          {search && !skillSuggestions.some(s => s.toLowerCase() === search.toLowerCase()) && (
+            <div className="mb-4">
+              <Button
+                variant={selectedSkills.includes(search) ? "default" : "outline"}
+                onClick={() => handleSkillClick(search)}
+                className={`transition-all duration-200 px-3 py-1 rounded-full text-xs font-medium max-w-[140px] truncate whitespace-nowrap
+                  ${selectedSkills.includes(search)
+                    ? 'bg-[var(--accent)] text-white border-none'
+                    : 'bg-[var(--card)] text-[var(--highlight)] border border-[var(--accent)]'}
+                `}
+                style={{
+                  color: selectedSkills.includes(search) ? '#fff' : '#A68A56',
+                  background: selectedSkills.includes(search) ? '#8F6CD9' : 'var(--card)',
+                  borderColor: '#8F6CD9',
+                  fontSize: '0.85rem',
+                }}
+              >
+                Add "{search}"
               </Button>
             </div>
-          ) : (
-            <div className="space-y-3">
-              {offeredSkills.slice(0, 3).map((skill) => (
-                <div key={skill.id} className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-sm">{skill.skill?.name}</p>
-                    <div className="flex items-center space-x-1 mt-1">
-                      {renderStars(skill.proficiency_level)}
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {offeredSkills.length > 3 && (
-                <p className="text-xs text-gray-500 text-center pt-2">
-                  +{offeredSkills.length - 3} more skills
-                </p>
-              )}
-            </div>
           )}
-        </CardContent>
-      </Card>
-
-      {/* Wanted Skills */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-lg">Skills I Want</CardTitle>
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/dashboard/skills">
-              <Plus className="h-4 w-4 mr-1" />
-              Add
-            </Link>
-          </Button>
-        </CardHeader>
-        <CardContent>
-          {wantedSkills.length === 0 ? (
-            <div className="text-center py-4">
-              <BookOpen className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-              <p className="text-sm text-gray-600">No skills wanted yet</p>
-              <Button variant="outline" size="sm" className="mt-2" asChild>
-                <Link href="/dashboard/skills">Add Skills</Link>
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {wantedSkills.slice(0, 3).map((skill) => (
-                <div key={skill.id}>
-                  <p className="font-medium text-sm">{skill.skill?.name}</p>
-                  {skill.description && (
-                    <p className="text-xs text-gray-600 mt-1">{skill.description}</p>
-                  )}
-                </div>
-              ))}
-              {wantedSkills.length > 3 && (
-                <p className="text-xs text-gray-500 text-center pt-2">
-                  +{wantedSkills.length - 3} more skills
-                </p>
-              )}
-            </div>
-          )}
+          <div className="flex justify-center">
+            <Button
+              onClick={handleSave}
+              disabled={saving || selectedSkills.length === 0}
+              className="mt-2 w-full py-3 font-semibold rounded-lg transition"
+              style={{
+                maxWidth: '220px',
+                background: saving ? '#A68A56' : '#8F6CD9',
+                color: '#fff',
+                border: '2px solid #340773',
+                fontSize: '1rem',
+                boxShadow: '0 2px 8px rgba(52,7,115,0.08)'
+              }}
+            >
+              {saving ? "Saving..." : "Save Skills"}
+            </Button>
+          </div>
+          {saveMsg && <p className="mt-2 text-sm text-green-600 text-center">{saveMsg}</p>}
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
